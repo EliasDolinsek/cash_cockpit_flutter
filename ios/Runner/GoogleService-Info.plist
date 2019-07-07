@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>715477694071-fd2tcru8kqfaldi7dqcvph7i4jp8pf00.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.715477694071-fd2tcru8kqfaldi7dqcvph7i4jp8pf00</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>715477694071-p8p7v0nool8hndd7h3v58j9l1geue5gi.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCPsbEIVtREz1qcpQzGsQ1TM0bOhdU1yS8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>715477694071</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.dolinsek.elias.cashcockpit</string>
+	<key>PROJECT_ID</key>
+	<string>cash-cockpit</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cash-cockpit.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:715477694071:ios:1dbfd5ea3a5a2328</string>
+	<key>DATABASE_URL</key>
+	<string>https://cash-cockpit.firebaseio.com</string>
+</dict>
+</plist>
