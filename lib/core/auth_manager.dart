@@ -15,4 +15,7 @@ Future<FirebaseUser> signInWithGoogle() async {
       .signInWithCredential(authCredential);
 }
 
+Future<void> signOut(){
+  return FirebaseAuth.instance.signOut();
+}
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../pages/loading_page.dart';
 import '../core/auth_manager.dart' as authManager;
 
 class SignInPage extends StatefulWidget {

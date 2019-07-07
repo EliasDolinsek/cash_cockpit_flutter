@@ -6,9 +6,11 @@ import 'data/data_provider.dart';
 import 'data/data_manager.dart' as dataManager;
 
 import 'pages/loading_page.dart';
-import 'pages/settings_setup_pages.dart';
-
 import 'core/settings.dart';
+
+import 'pages/main_page.dart';
+import 'pages/sign_in_page.dart';
+import 'pages/welcome_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,6 +29,11 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             theme: appTheme,
             home: LoadingPage(),
+          );
+        } else if (snapshot.data == null) {
+          return MaterialApp(
+            theme: appTheme,
+            home: SignInPage(),
           );
         } else {
           final firebaseUser = snapshot.data;
@@ -50,9 +57,9 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data) {
-            return Text("FULLY");
+            return MainPage();
           } else {
-            return CurrencySetup();
+            return WelcomePage();
           }
         } else {
           return LoadingPage();
