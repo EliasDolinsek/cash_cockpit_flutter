@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../pages/currency_setup_pages.dart';
+import '../pages/categories_editor_page.dart';
+
 import '../core/auth_manager.dart' as authManager;
 
 class SettingsLayout extends StatefulWidget {
@@ -26,6 +28,9 @@ class _SettingsLayoutState extends State<SettingsLayout> {
       ListTile(
         title: Text("Categories"),
         subtitle: Text("Create, edit and delete categories"),
+        onTap: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => CategoriesEditorPage()));
+        },
       )
     ];
   }

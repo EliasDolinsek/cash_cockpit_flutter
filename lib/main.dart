@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
           final firebaseUser = snapshot.data;
           return DataProvider(
             firebaseUser: firebaseUser,
+            categories: Firestore.instance.collection("categories").where("userID", isEqualTo: firebaseUser.uid).snapshots(),
             settings: Settings.fromFirebase(firebaseUser),
             child: MaterialApp(
               title: "CashCockpit",
