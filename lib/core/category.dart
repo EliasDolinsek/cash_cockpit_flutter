@@ -34,4 +34,10 @@ class Category {
       "userID": firebaseUserID
     };
   }
+
+  static List<Category> getDefaultCategories() => [
+    Category(name: "Default category #1", color: Colors.blue.value.toString(), billIDs: []),
+    Category(name: "Default category #2", color: Colors.blue.value.toString(), billIDs: []),
+    Category(name: "Default category #3", color: Colors.blue.value.toString(), billIDs: []),
+  ];
 }

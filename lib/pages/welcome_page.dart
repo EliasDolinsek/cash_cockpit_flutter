@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'currency_setup_pages.dart';
 import 'main_page.dart';
 
+import '../data/data_manager.dart' as dataManager;
+
 class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    dataManager.createDefaultCategoriesIfNoExist(context);
     return Scaffold(
       body: Column(
         children: <Widget>[

@@ -7,10 +7,12 @@ import '../data/data_provider.dart';
 import '../data/data_manager.dart' as dataManager;
 
 class CategoryItem extends StatefulWidget {
+
   final bool editMode;
   final Category category;
+  final Function onCategorySelected;
 
-  const CategoryItem(this.category, {this.editMode = false});
+  const CategoryItem(this.category, {this.editMode = false, this.onCategorySelected});
 
   @override
   _CategoryItemState createState() => _CategoryItemState();
@@ -65,7 +67,7 @@ class _CategoryItemState extends State<CategoryItem> {
 
   Widget _buildSubtitle() {
     return widget.editMode
-        ? Text("Click to edit title")
+        ? Text("Click to change this title")
         : Text("${widget.category.billIDs.length} bills");
   }
 
@@ -93,7 +95,10 @@ class _CategoryItemState extends State<CategoryItem> {
         ],
       );
     } else {
-      return null;
+      return MaterialButton(
+        child: Text("SELECT"),
+        onPressed: widget.onCategorySelected,
+      );
     }
   }
 

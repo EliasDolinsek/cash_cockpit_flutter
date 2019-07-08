@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'data/data_provider.dart';
+import 'data/month_data_provider.dart';
 import 'data/data_manager.dart' as dataManager;
 
 import 'pages/loading_page.dart';
@@ -42,6 +43,10 @@ class MyApp extends StatelessWidget {
             firebaseUser: firebaseUser,
             categories: Firestore.instance.collection("categories").where("userID", isEqualTo: firebaseUser.uid).snapshots(),
             settings: Settings.fromFirebase(firebaseUser),
+            monthDataProvider: MonthDataProvider(
+              month: DateTime.now(),
+              firebaseUserID: firebaseUser.uid
+            ),
             child: MaterialApp(
               title: "CashCockpit",
               theme: appTheme,
