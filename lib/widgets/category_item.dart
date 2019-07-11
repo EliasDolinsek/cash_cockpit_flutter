@@ -12,7 +12,7 @@ class CategoryItem extends StatefulWidget {
   final Category category;
   final Function onCategorySelected;
 
-  const CategoryItem(this.category, {this.editMode = false, this.onCategorySelected});
+  const CategoryItem(this.category, {this.editMode = false, this.onCategorySelected(Category category)});
 
   @override
   _CategoryItemState createState() => _CategoryItemState();
@@ -68,7 +68,7 @@ class _CategoryItemState extends State<CategoryItem> {
   Widget _buildSubtitle() {
     return widget.editMode
         ? Text("Click to change this title")
-        : Text("${widget.category.billIDs.length} bills");
+        : null;
   }
 
   Widget _buildTrailing() {
@@ -97,7 +97,7 @@ class _CategoryItemState extends State<CategoryItem> {
     } else {
       return MaterialButton(
         child: Text("SELECT"),
-        onPressed: widget.onCategorySelected,
+        onPressed: () => widget.onCategorySelected(widget.category),
       );
     }
   }

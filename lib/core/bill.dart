@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Bill {
 
-  static const output = 0;
-  static const input = 1;
+  static const outcome = 0;
+  static const income = 1;
 
   String name, month, id;
   List<String> imageURLs;
@@ -12,13 +12,23 @@ class Bill {
 
   Bill({this.name, this.month, this.imageURLs, this.billType, this.amount, this.id});
 
+  factory Bill.newBill(String month){
+    return Bill(
+      name: "",
+      month: month,
+      imageURLs: [],
+      billType: outcome,
+      amount: 0.0
+    );
+  }
+
   factory Bill.fromnFirestore(DocumentSnapshot documentSnapshot){
     final map = documentSnapshot.data;
     return Bill(
       name: map["name"] ?? "",
       imageURLs: List<String>.from(map["imageURLs"]) ?? [],
       amount: map["amount"] ?? 0.0,
-      billType: map["billType"] ?? output,
+      billType: map["billType"] ?? outcome,
       month: map["month"] ?? "",
       id: documentSnapshot.documentID
     );

@@ -36,8 +36,8 @@ void createDefaultCategories(String firebaseUserID){
   });
 }
 
-Future<dynamic> createBill(Bill bill, String firebaseUserID){
-  return Firestore.instance.collection("bills").document().setData(bill.toMap(firebaseUserID));
+Future<String> createBill(Bill bill, String firebaseUserID) async {)
+  return (await Firestore.instance.collection("bills").add(bill.toMap(firebaseUserID))).documentID;
 }
 
 Future<void> updateUserSettings(Settings settings, String firebaseUserID) {

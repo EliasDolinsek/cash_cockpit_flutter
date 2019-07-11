@@ -9,9 +9,11 @@ import '../data/data_provider.dart';
 import '../data/data_manager.dart' as dataManager;
 
 class CategoriesLayout extends StatelessWidget {
-  final bool editMode;
 
-  const CategoriesLayout({this.editMode = false});
+  final bool editMode;
+  final Function onCategorySelected;
+
+  const CategoriesLayout({this.editMode = false, this.onCategorySelected(Category category)});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +33,13 @@ class CategoriesLayout extends StatelessWidget {
                   Category.fromFirestore(documents.elementAt(index));
                   return CategoryItem(
                     category,
-                    editMode: true,
+                    editMode: editMode,
+                    onCategorySelected: onCategorySelected,
                   );
                 },
-                separatorBuilder: (context, index) => Divider(),
+                separatorBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(bottom: 4.0),
+                ),
                 itemCount: documents.length);
           }
         } else {

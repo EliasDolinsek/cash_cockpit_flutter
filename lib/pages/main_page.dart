@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
+import '../core/bill.dart';
+
+import '../pages/bill_page.dart';
+
 import '../layouts/history_layout.dart';
 import '../layouts/settings_layout.dart';
+
+import '../data/data_provider.dart';
+import '../data/data_manager.dart' as dataManager;
 
 class MainPage extends StatefulWidget {
   @override
@@ -35,11 +42,14 @@ class _MainPageState extends State<MainPage> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   items: [
-                    DropdownMenuItem(child: Text("JAN 2020")),
-                    DropdownMenuItem(child: Text("CHANGE"), value: "change",)
+                    DropdownMenuItem(child: Text(DataProvider.of(context).monthDataProvider.monthAsString)),
+                    DropdownMenuItem(
+                      child: Text("CHANGE"),
+                      value: "change",
+                    )
                   ],
                   onChanged: (value) {
-                    if(value == "change") _showMonthPicker();
+                    if (value == "change") _showMonthPicker();
                   },
                 ),
               ),
@@ -71,11 +81,26 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _selectedIndex == 0  ? FloatingActionButton.extended(onPressed: (){}, label: Text("ADD BILL")) : null,
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                final bill = Bill.newBill(DataProvider.of(context).monthDataProvider.monthAsString);
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => BillPage(bill, false)));
+              },
+              label: Text("ADD BILL"))
+          : null,
     );
   }
 
-  void _showMonthPicker(){
-    showMonthPicker(context: context, initialDate: DateTime.now(),).then((DateTime dateTime){print(dateTime.toString());});
+  void _showMonthPicker() {
+    showMonthPicker(
+      context: context,
+      initialDate: DataProvider.of(context).monthDataProvider.month,
+    ).then((DateTime dateTime) {
+      if(dateTime == null) return;
+      setState(() {
+        DataProvider.of(context).monthDataProvider.setupMonth(dateTime);
+      });
+    });
   }
 }

@@ -12,8 +12,9 @@ class MonthDataProvider {
   }
 
   void setupMonth(DateTime month){
+    this.month = month;
     bills = Firestore.instance.collection("bills").where("userID", isEqualTo: firebaseUserID).where("month", isEqualTo: monthAsString).snapshots();
   }
 
-  String get monthAsString => DateFormat("MMM yyyy").format(month);
+  String get monthAsString => DateFormat("MMM yyyy").format(month).toUpperCase();
 }
