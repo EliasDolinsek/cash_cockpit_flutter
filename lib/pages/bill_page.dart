@@ -40,6 +40,24 @@ class _BillPageState extends State<BillPage> {
     name = widget.bill.name;
   }
 
+  @override
+  void dispose() {
+    if(widget.editMode){
+      updateBill();
+      updateCategory(widget.bill.id);
+    }
+
+    super.dispose();
+  }
+
+  void updateCategory(String billID) {
+    if(category != null){
+      category.billIDs.add(billID);
+      final firebaseUserID = DataProvider.of(context).firebaseUser.uid;
+      dataManager.updateCategory(category, firebaseUserID);
+    }
+  }
+
   void loadCategoryFromFirestore() async {
     if (widget.bill.id == null || widget.bill.id.isEmpty) {
     } else {
@@ -67,7 +85,20 @@ class _BillPageState extends State<BillPage> {
         title: Text(name, style: TextStyle(color: Colors.black)),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
-        actions: _buildActions(),
+        actions: widget.editMode ? [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: (){},
+          )
+        ] : [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: (){
+              updateBill();
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -140,49 +171,17 @@ class _BillPageState extends State<BillPage> {
     );
   }
 
-  List<Widget> _buildActions() {
-    final firebaseUserID = DataProvider.of(context).firebaseUser.uid;
-    if (widget.editMode) {
-      return [
-        IconButton(
-          icon: Icon(Icons.check),
-          onPressed: () {
-            updateBill();
-            dataManager.updateBill(widget.bill, firebaseUserID);
-            if (category != null)
-              dataManager.updateCategory(category, firebaseUserID);
-            Navigator.of(context).pop();
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: () {},
-        )
-      ];
-    } else {
-      return [
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            updateBill();
-            dataManager
-                .createBill(widget.bill, firebaseUserID)
-                .then((billid) {
-
-            });
-            if (category != null)
-              dataManager.updateCategory(category, firebaseUserID);
-            Navigator.of(context).pop();
-          },
-        ),
-      ];
-    }
-  }
-
   void updateBill() {
     widget.bill.name = name;
     widget.bill.billType = billType;
     widget.bill.amount = amount;
+
+    final firebaseUserID = DataProvider.of(context).firebaseUser.uid;
+    if(widget.editMode){
+      dataManager.updateBill(widget.bill, firebaseUserID);
+    } else {
+      dataManager.createBill(widget.bill, firebaseUserID).then((billID) => updateCategory(billID));
+    }
   }
 
   Widget _buildNameField() {

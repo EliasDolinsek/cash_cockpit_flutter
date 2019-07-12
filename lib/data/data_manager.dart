@@ -36,7 +36,7 @@ void createDefaultCategories(String firebaseUserID){
   });
 }
 
-Future<String> createBill(Bill bill, String firebaseUserID) async {)
+Future<String> createBill(Bill bill, String firebaseUserID) async {
   return (await Firestore.instance.collection("bills").add(bill.toMap(firebaseUserID))).documentID;
 }
 

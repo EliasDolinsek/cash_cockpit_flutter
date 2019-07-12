@@ -34,6 +34,8 @@ class Bill {
     );
   }
 
+  String get billTypeAsString => billType == outcome ? "OUTCOME" : "INCOME";
+
   Map<String, dynamic> toMap(String firebaseUserID){
     return {
       "userID":firebaseUserID,
