@@ -5,6 +5,7 @@ import '../core/bill.dart';
 import '../data/data_provider.dart';
 
 class BillItem extends StatelessWidget {
+
   final Bill bill;
   final Function onPressed;
 
@@ -42,12 +43,14 @@ class BillItem extends StatelessWidget {
                   label: Text(
                     bill.billTypeAsString,
                     style: TextStyle(
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                    ),
                   ),
+                  backgroundColor: bill.billType == Bill.outcome ? Color(0xFF9a0007) : Color(0xFF00600f),
                 ),
                 SizedBox(width: 8.0),
                 Chip(
-                  label: Text("${bill.imageURLs.length} images",
+                  label: Text("${bill.imageURLs.length} IMAGES",
                       style: TextStyle(color: Colors.white)),
                   backgroundColor: Theme.of(context).primaryColor,
                 )
