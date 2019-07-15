@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 
 import '../core/bill.dart';
 
-import '../layouts/categories_layout.dart';
-
 import '../widgets/amount_text.dart';
+import '../layouts/images_list.dart';
+
+import 'select_category_page.dart';
 
 import '../data/data_provider.dart';
 import '../data/data_manager.dart' as dataManager;
@@ -25,6 +26,9 @@ class BillPage extends StatefulWidget {
 class _BillPageState extends State<BillPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  DataProvider _dataProvider;
+  TextEditingController _nameController;
+
   int billType;
   double amount;
   String name;
@@ -38,11 +42,18 @@ class _BillPageState extends State<BillPage> {
     billType = widget.bill.billType;
     amount = widget.bill.amount;
     name = widget.bill.name;
+    _nameController = TextEditingController(text: name)
+      ..selection = TextSelection.collapsed(offset: name.length);
+
+    Future.delayed(Duration.zero, () {
+      _dataProvider = DataProvider.of(context);
+      loadCategoryFromFirestore();
+    });
   }
 
   @override
   void dispose() {
-    if(widget.editMode){
+    if (widget.editMode) {
       updateBill();
       updateCategory(widget.bill.id);
     }
@@ -51,24 +62,24 @@ class _BillPageState extends State<BillPage> {
   }
 
   void updateCategory(String billID) {
-    if(category != null){
-      category.billIDs.add(billID);
-      final firebaseUserID = DataProvider.of(context).firebaseUser.uid;
-      dataManager.updateCategory(category, firebaseUserID);
+    if (category != null) {
+      if (!category.billIDs.contains(billID)) category.billIDs.add(billID);
+      dataManager.updateCategory(category, _dataProvider.firebaseUser.uid);
     }
   }
 
   void loadCategoryFromFirestore() async {
-    if (widget.bill.id == null || widget.bill.id.isEmpty) {
-    } else {
+    if (widget.bill.id != null) {
       setState(() => categoryLoading = true);
-      final documentReference = (await Firestore.instance
-              .collection("categories")
-              .where("billIDs", arrayContains: widget.bill.id)
-              .snapshots()
-              .first)
-          .documents
-          .first;
+      var documentReference;
+
+      try {
+        documentReference = (await Firestore.instance
+                .collection("categories")
+                .where("billIDs", arrayContains: widget.bill.id)
+                .snapshots()
+                .first).documents.first;
+      } on Exception {/*No category*/}
 
       setState(() {
         category = Category.fromFirestore(documentReference);
@@ -82,23 +93,11 @@ class _BillPageState extends State<BillPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(name, style: TextStyle(color: Colors.black)),
+        title: Text(name.isNotEmpty ? name : "Bill",
+            style: TextStyle(color: Colors.black)),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
-        actions: widget.editMode ? [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: (){},
-          )
-        ] : [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: (){
-              updateBill();
-              Navigator.pop(context);
-            },
-          )
-        ],
+        actions: _buildActions(),
       ),
       body: Column(
         children: <Widget>[
@@ -109,10 +108,12 @@ class _BillPageState extends State<BillPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   AmountText(
-                    upperText: amount.toString(),
+                    amountText: amount,
                     lowerText: "Amount",
                     editable: true,
-                    onTextChanged: null,
+                    onTextChanged: (value) {
+                      amount = value;
+                    },
                   ),
                   SizedBox(height: 16.0),
                   _buildBillTypeSelection(),
@@ -129,6 +130,11 @@ class _BillPageState extends State<BillPage> {
                   _buildNameField(),
                   SizedBox(height: 8.0),
                   _buildCategoryListTitle(),
+                  SizedBox(height: 8.0),
+                  Container(
+                    child: ImagesList(widget.bill),
+                    constraints: BoxConstraints(maxHeight: 100),
+                  ),
                 ],
               ),
             ),
@@ -136,6 +142,27 @@ class _BillPageState extends State<BillPage> {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildActions() {
+    if (widget.editMode) {
+      return [
+        IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () {},
+        )
+      ];
+    } else {
+      return [
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () {
+            updateBill();
+            Navigator.pop(context);
+          },
+        )
+      ];
+    }
   }
 
   Widget _buildBillTypeSelection() {
@@ -176,11 +203,13 @@ class _BillPageState extends State<BillPage> {
     widget.bill.billType = billType;
     widget.bill.amount = amount;
 
-    final firebaseUserID = DataProvider.of(context).firebaseUser.uid;
-    if(widget.editMode){
+    final firebaseUserID = _dataProvider.firebaseUser.uid;
+    if (widget.editMode) {
       dataManager.updateBill(widget.bill, firebaseUserID);
     } else {
-      dataManager.createBill(widget.bill, firebaseUserID).then((billID) => updateCategory(billID));
+      dataManager
+          .createBill(widget.bill, firebaseUserID)
+          .then((billID) => updateCategory(billID));
     }
   }
 
@@ -188,6 +217,7 @@ class _BillPageState extends State<BillPage> {
     return TextField(
       decoration:
           InputDecoration(border: OutlineInputBorder(), hintText: "Name"),
+      controller: _nameController,
       onChanged: (value) {
         setState(() {
           name = value;
@@ -205,19 +235,14 @@ class _BillPageState extends State<BillPage> {
       title: Text(category == null ? "No category" : category.name),
       trailing: MaterialButton(
         onPressed: () {
-          _scaffoldKey.currentState.showBottomSheet(
-            (context) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: CategoriesLayout(
-                  onCategorySelected: (category) {
-                    Navigator.of(context).pop();
-                    setState(() => this.category = category);
-                  },
-                ),
-              );
-            },
-          );
+          Navigator.of(context)
+              .push(
+                  MaterialPageRoute(builder: (context) => SelectCategoryPage()))
+              .then((category) {
+            setState(() {
+              this.category = category;
+            });
+          });
         },
         child: Text("CHANGE"),
       ),

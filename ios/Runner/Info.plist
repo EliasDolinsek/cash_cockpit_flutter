@@ -54,5 +54,11 @@
     		</array>
     	</dict>
     </array>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Select an image for your bill</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Shoot an image for your bill</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Shoot an image for your bill</string>
 </dict>
 </plist>

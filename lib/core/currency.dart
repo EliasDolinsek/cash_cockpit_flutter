@@ -82,31 +82,21 @@ class CurrencyFormatter {
 
   const CurrencyFormatter(this.settings);
 
-  TextEditingController getCurrencyTextController(String text) {
-    var alignCurrencySymbolRight =
+  MoneyMaskedTextController getCurrencyTextController(double amount) {
+    final alignCurrencySymbolRight =
         settings.currency.currencySymbolAlignment == CurrencySymbolAlignment.RIGHT;
+    final currencySymbol = settings.currency.currencySymbol;
 
-    var currencySymbol = settings.currency.currencySymbol;
+    final controller = MoneyMaskedTextController(
+      initialValue: amount,
+      decimalSeparator: settings.centSeparatorSymbol,
+      thousandSeparator: settings.thousandSeparatorSymbol,
+      rightSymbol: alignCurrencySymbolRight ? currencySymbol : "",
+      leftSymbol: !alignCurrencySymbolRight ? currencySymbol : "",);
 
-    return MoneyMaskedTextController(
-        initialValue: double.parse(text),
-        decimalSeparator: settings.centSeparatorSymbol,
-        thousandSeparator: settings.thousandSeparatorSymbol,
-        rightSymbol: alignCurrencySymbolRight ? currencySymbol : "",
-        leftSymbol: !alignCurrencySymbolRight ? currencySymbol : "");
-  }
+    controller.selection = TextSelection.collapsed(offset: controller.value.text.length);
 
-  double getAmountInputAsDouble(String input) {
-    var resultString = input;
-
-    resultString = resultString.replaceAll(settings.thousandSeparatorSymbol, "");
-    resultString = resultString.replaceAll(settings.currency.currencySymbol, "");
-
-    if (settings.centSeparatorSymbol == ",") {
-      resultString = resultString.replaceAll(settings.centSeparatorSymbol, ".");
-    }
-
-    return double.parse(resultString);
+    return controller;
   }
 
   String formatAmount(double amount) {

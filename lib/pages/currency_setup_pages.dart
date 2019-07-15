@@ -99,10 +99,7 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
   Widget _buildAmountText() {
     return AmountText(
-      upperText: DataProvider.of(context)
-          .settings
-          .currencyFormatter
-          .formatAmount(1000),
+      amountText: 1000,
       lowerText: "EXAMPLE",
     );
   }
