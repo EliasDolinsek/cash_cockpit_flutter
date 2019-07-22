@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../core/bill.dart';
@@ -19,38 +18,33 @@ class _HistoryLayoutState extends State<HistoryLayout> {
   DateTime month;
 
   @override
-  Widget build(BuildContext context) {
-    DataProvider.of(context).monthDataProvider.onMonthChanged = () => setState((){});
-    return StreamBuilder<QuerySnapshot>(
-      stream: DataProvider.of(context).monthDataProvider.bills,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return _buildBillsList(snapshot.data.documents.length, snapshot);
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, (){
+      DataProvider.of(context).monthDataProvider.onChange = () => setState((){});
+    });
   }
 
-  Widget _buildBillsList(int bills, AsyncSnapshot snapshot) {
-    if(bills == 0){
+  @override
+  Widget build(BuildContext context) {
+    return _buildBillsList(DataProvider.of(context).monthDataProvider.bills);
+  }
+
+  Widget _buildBillsList(List<Bill> bills) {
+    if(bills.length == 0){
       return Center(
         child: Text("No bills"),
       );
     } else {
       return ListView.separated(
         itemBuilder: (context, index) {
-          final bill =
-          Bill.fromnFirestore(snapshot.data.documents.elementAt(index));
+          final bill = bills.elementAt(index);
           return BillItem(bill, onPressed: (){
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => BillPage(bill, true)));
           },);
         },
         separatorBuilder: (context, index) => Divider(),
-        itemCount: snapshot.data.documents.length,
+        itemCount: bills.length,
       );
     }
   }

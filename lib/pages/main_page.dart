@@ -5,11 +5,11 @@ import '../core/bill.dart';
 
 import '../pages/bill_page.dart';
 
+import '../layouts/home_layout.dart';
 import '../layouts/history_layout.dart';
 import '../layouts/settings_layout.dart';
 
 import '../data/data_provider.dart';
-import '../data/data_manager.dart' as dataManager;
 
 class MainPage extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _bodies = [
-    Text("HOME"),
+    HomeLayout(),
     HistoryLayout(),
     SettingsLayout(),
   ];
