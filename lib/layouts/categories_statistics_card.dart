@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
+import '../core/category.dart';
+import '../core/bill.dart';
+
+import '../data/data_provider.dart';
 import 'statistics_card.dart';
 
-import '../core/bill.dart';
-import '../data/data_provider.dart';
-
-class BillsStatisticsCard extends StatefulWidget {
+class CategoriesStatisticsCard extends StatefulWidget {
   @override
-  _BillsStatisticsCardState createState() => _BillsStatisticsCardState();
+  _CategoriesStatisticsCardState createState() =>
+      _CategoriesStatisticsCardState();
 }
 
-class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
+class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
   DefaultStatisticsOptions _selectedStatisticOption;
 
   @override
@@ -21,6 +23,7 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
     Future.delayed(Duration.zero, () {
       final dataProvider = DataProvider.of(context);
       dataProvider.monthDataProvider.onChange = () => setState(() {});
+      dataProvider.categoriesProvider.onChanged = () => setState((){});
     });
   }
 
@@ -28,7 +31,7 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
   Widget build(BuildContext context) {
     return StatisticsCard(
       title: Text(
-        "Bills",
+        "Categories",
         style: TextStyle(
           fontSize: 24,
           letterSpacing: 0.0,
@@ -36,6 +39,10 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
         textAlign: TextAlign.left,
       ),
       options: Row(
+        /*
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+         */
         children: <Widget>[
           ChoiceChip(
             label: Text("AMOUNT BASED"),
@@ -73,46 +80,53 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
     );
   }
 
-  List<charts.Series<BillTypeUsage, int>> _getChartSeries() {
+  List<charts.Series<CategoryUsage, int>> _getChartSeries() {
     return [
-      charts.Series<BillTypeUsage, int>(
-          id: "Bill usage",
-          domainFn: (BillTypeUsage usage, _) => usage.billType,
-          measureFn: (BillTypeUsage usage, _) => usage.usage,
-          data: billTypeUsageAsList(),
-          colorFn: (usage, _) => usage.billType == Bill.income
-              ? charts.MaterialPalette.green.shadeDefault
-              : charts.MaterialPalette.red.shadeDefault)
+      charts.Series<CategoryUsage, int>(
+        id: "Categories usage",
+        domainFn: (CategoryUsage usage, _) => _,
+        measureFn: (CategoryUsage usage, _) => usage.usage,
+        data: categoriesUsageAsList(),
+        colorFn: (usage, _) => charts.Color(
+            r: usage.category.usableColor.red,
+            g: usage.category.usableColor.green,
+            b: usage.category.usableColor.blue),
+      )
     ];
   }
 
-  List<BillTypeUsage> billTypeUsageAsList() {
+  List<CategoryUsage> categoriesUsageAsList() {
     final dataProvider = DataProvider.of(context);
     if (_selectedStatisticOption == DefaultStatisticsOptions.amountBased) {
-      return [
-        BillTypeUsage(
-            Bill.outcome,
-            Bill.getBillsTotalAmount(
-                dataProvider.monthDataProvider.outcomeBills)),
-        BillTypeUsage(
-            Bill.income,
-            Bill.getBillsTotalAmount(
-                dataProvider.monthDataProvider.incomeBills)),
-      ];
-    } else {
-      return [
-        BillTypeUsage(
-            Bill.outcome, dataProvider.monthDataProvider.outcomeBills.length),
-        BillTypeUsage(
-            Bill.income, dataProvider.monthDataProvider.incomeBills.length),
-      ];
+      return categoriesUsageAmountBasedAsList(
+          dataProvider.categoriesProvider.categoeries,
+          dataProvider.monthDataProvider.bills);
+    } else if (_selectedStatisticOption ==
+        DefaultStatisticsOptions.usageBased) {
+      return dataProvider.categoriesProvider.categoeries
+          .map((c) => CategoryUsage(c, c.billIDs.length))
+          .toList();
     }
+  }
+
+  List<CategoryUsage> categoriesUsageAmountBasedAsList(
+      List<Category> categories, List<Bill> usableBills) {
+    return categories
+        .map((category) => CategoryUsage(
+            category,
+            Bill.getBillsTotalAmount(
+                filterBillsOfCategory(category, usableBills))))
+        .toList();
+  }
+
+  List<Bill> filterBillsOfCategory(Category category, List<Bill> bills) {
+    return bills.where((b) => category.billIDs.contains(b.id)).toList();
   }
 }
 
-class BillTypeUsage {
-  final int billType;
-  final int usage;
+class CategoryUsage {
+  Category category;
+  int usage;
 
-  const BillTypeUsage(this.billType, this.usage);
+  CategoryUsage(this.category, this.usage);
 }

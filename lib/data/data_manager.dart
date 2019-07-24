@@ -19,9 +19,9 @@ Future<bool> doUserSettingsExist(String firebaseUserID) async {
       .exists;
 }
 
-Future<void> createDefaultCategoriesIfNoExist(BuildContext context) async {
+void createDefaultCategoriesIfNoExist(BuildContext context) {
   final dataProvider = DataProvider.of(context);
-  if((await dataProvider.categories.first).documents.length == 0) {
+  if(dataProvider.categoriesProvider.categoeries.length == 0) {
     return createDefaultCategories(dataProvider.firebaseUser.uid);
   }
 }
