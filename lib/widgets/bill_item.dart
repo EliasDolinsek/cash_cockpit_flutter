@@ -41,7 +41,7 @@ class BillItem extends StatelessWidget {
               children: <Widget>[
                 Chip(
                   label: Text(
-                    bill.billTypeAsString,
+                    Bill.billTypeAsString(bill.billType),
                     style: TextStyle(
                       color: Colors.white,
                     ),

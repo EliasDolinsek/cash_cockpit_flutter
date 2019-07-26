@@ -33,7 +33,7 @@ class Bill {
         id: documentSnapshot.documentID);
   }
 
-  String get billTypeAsString => billType == outcome ? "OUTCOME" : "INCOME";
+  static String billTypeAsString(int type) => type == outcome ? "OUTCOME" : "INCOME";
 
   Map<String, dynamic> toMap(String firebaseUserID) {
     return {
@@ -46,9 +46,11 @@ class Bill {
     };
   }
 
-  static int getBillsTotalAmount(List<Bill> bills) {
+  static double getBillsTotalAmount(List<Bill> bills) {
     double result = 0;
     bills.forEach((bill) => result += bill.amount);
-    return result.toInt();
+    return result;
   }
+
+  static List<Bill> filterBillsByType(List<Bill> bills, int billType) => bills.where((bill) => bill.billType == billType).toList();
 }

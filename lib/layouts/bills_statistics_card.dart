@@ -66,7 +66,10 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
           height: 300,
           child: charts.PieChart(
             _getChartSeries(),
-            defaultRenderer: charts.ArcRendererConfig(arcWidth: 60),
+            defaultRenderer: charts.ArcRendererConfig(
+              arcWidth: 60,
+              arcRendererDecorators: [charts.ArcLabelDecorator()],
+            ),
           ),
         ),
       ),
@@ -82,7 +85,9 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
           data: billTypeUsageAsList(),
           colorFn: (usage, _) => usage.billType == Bill.income
               ? charts.MaterialPalette.green.shadeDefault
-              : charts.MaterialPalette.red.shadeDefault)
+              : charts.MaterialPalette.red.shadeDefault,
+          labelAccessorFn: (BillTypeUsage usage, _) =>
+              Bill.billTypeAsString(usage.billType)),
     ];
   }
 
@@ -93,11 +98,11 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
         BillTypeUsage(
             Bill.outcome,
             Bill.getBillsTotalAmount(
-                dataProvider.monthDataProvider.outcomeBills)),
+                dataProvider.monthDataProvider.outcomeBills).toInt()),
         BillTypeUsage(
             Bill.income,
             Bill.getBillsTotalAmount(
-                dataProvider.monthDataProvider.incomeBills)),
+                dataProvider.monthDataProvider.incomeBills).toInt()),
       ];
     } else {
       return [

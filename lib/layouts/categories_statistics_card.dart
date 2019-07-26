@@ -23,7 +23,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
     Future.delayed(Duration.zero, () {
       final dataProvider = DataProvider.of(context);
       dataProvider.monthDataProvider.onChange = () => setState(() {});
-      dataProvider.categoriesProvider.onChanged = () => setState((){});
+      dataProvider.categoriesProvider.onChanged = () => setState(() {});
     });
   }
 
@@ -73,7 +73,10 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
           height: 300,
           child: charts.PieChart(
             _getChartSeries(),
-            defaultRenderer: charts.ArcRendererConfig(arcWidth: 60),
+            defaultRenderer: charts.ArcRendererConfig(
+              arcWidth: 60,
+              arcRendererDecorators: [charts.ArcLabelDecorator()],
+            ),
           ),
         ),
       ),
@@ -91,7 +94,8 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
             r: usage.category.usableColor.red,
             g: usage.category.usableColor.green,
             b: usage.category.usableColor.blue),
-      )
+        labelAccessorFn: (CategoryUsage usage, _) => usage.category.name,
+      ),
     ];
   }
 
@@ -101,8 +105,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
       return categoriesUsageAmountBasedAsList(
           dataProvider.categoriesProvider.categoeries,
           dataProvider.monthDataProvider.bills);
-    } else if (_selectedStatisticOption ==
-        DefaultStatisticsOptions.usageBased) {
+    } else {
       return dataProvider.categoriesProvider.categoeries
           .map((c) => CategoryUsage(c, c.billIDs.length))
           .toList();
@@ -115,7 +118,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
         .map((category) => CategoryUsage(
             category,
             Bill.getBillsTotalAmount(
-                filterBillsOfCategory(category, usableBills))))
+                filterBillsOfCategory(category, usableBills)).toInt()))
         .toList();
   }
 

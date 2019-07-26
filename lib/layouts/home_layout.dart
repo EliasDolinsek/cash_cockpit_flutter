@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../layouts/money_statistics_card.dart';
 import '../layouts/bills_statistics_card.dart';
 import '../layouts/categories_statistics_card.dart';
 
@@ -28,6 +28,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
+        MoneyStatisticsCard(),
         BillsStatisticsCard(),
         CategoriesStatisticsCard()
       ],
