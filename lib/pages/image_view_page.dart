@@ -11,7 +11,7 @@ class ImageViewPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Bill image",
+          "Image",
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(color: Colors.black),
@@ -20,8 +20,27 @@ class ImageViewPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              Navigator.pop(context);
-              onDelete();
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("Delete this image"),
+                  content: Text("Do you really want to delete this image"),
+                  actions: <Widget>[
+                    MaterialButton(
+                      child: Text("CANCEL"),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    MaterialButton(
+                      child: Text("DELETE"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onDelete();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
           )
         ],

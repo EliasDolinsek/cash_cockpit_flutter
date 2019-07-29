@@ -1,6 +1,5 @@
 import 'package:cash_cockpit_app/core/category.dart';
 import 'package:cash_cockpit_app/data/data_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../core/bill.dart';
@@ -24,6 +23,7 @@ class BillPage extends StatefulWidget {
 }
 
 class _BillPageState extends State<BillPage> {
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   DataProvider _dataProvider;
@@ -33,8 +33,6 @@ class _BillPageState extends State<BillPage> {
   double amount;
   String name;
   Category category;
-
-  bool categoryLoading = false;
 
   @override
   void initState() {
@@ -47,7 +45,14 @@ class _BillPageState extends State<BillPage> {
 
     Future.delayed(Duration.zero, () {
       _dataProvider = DataProvider.of(context);
-      loadCategoryFromFirestore();
+
+      setState(() {
+        category = DataProvider.of(context)
+            .categoriesProvider
+            .categoeries
+            .firstWhere((c) => c.billIDs.contains(widget.bill.id),
+                orElse: () => null);
+      });
     });
   }
 
@@ -63,28 +68,9 @@ class _BillPageState extends State<BillPage> {
 
   void updateCategory(String billID) {
     if (category != null) {
+      print(category.billIDs);
       if (!category.billIDs.contains(billID)) category.billIDs.add(billID);
       dataManager.updateCategory(category, _dataProvider.firebaseUser.uid);
-    }
-  }
-
-  void loadCategoryFromFirestore() async {
-    if (widget.bill.id != null) {
-      setState(() => categoryLoading = true);
-      var documentReference;
-
-      try {
-        documentReference = (await Firestore.instance
-                .collection("categories")
-                .where("billIDs", arrayContains: widget.bill.id)
-                .snapshots()
-                .first).documents.first;
-      } on Exception {/*No category*/}
-
-      setState(() {
-        category = Category.fromFirestore(documentReference);
-        categoryLoading = false;
-      });
     }
   }
 
@@ -99,47 +85,42 @@ class _BillPageState extends State<BillPage> {
         backgroundColor: Colors.white,
         actions: _buildActions(),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  AmountText(
-                    amountText: amount,
-                    lowerText: "Amount",
-                    editable: true,
-                    onTextChanged: (value) {
-                      amount = value;
-                    },
-                  ),
-                  SizedBox(height: 16.0),
-                  _buildBillTypeSelection(),
-                ],
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Flexible(
+              flex: 3,
+              child: AmountText(
+                amount: amount,
+                lowerText: "Amount",
+                editable: true,
+                autoFocus: true,
+                onTextChanged: (value) {
+                  amount = value;
+                },
               ),
             ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView(
-                children: <Widget>[
-                  _buildNameField(),
-                  SizedBox(height: 8.0),
-                  _buildCategoryListTitle(),
-                  SizedBox(height: 8.0),
-                  Container(
-                    child: ImagesList(widget.bill),
-                    constraints: BoxConstraints(maxHeight: 100),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+            Flexible(
+                flex: 7,
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 16.0),
+                    _buildBillTypeSelection(),
+                    SizedBox(height: 16.0),
+                    _buildNameField(),
+                    SizedBox(height: 8.0),
+                    _buildCategoryListTitle(),
+                    SizedBox(height: 8.0),
+                    Container(
+                      child: ImagesList(widget.bill),
+                      constraints: BoxConstraints(maxHeight: 100),
+                    ),
+                  ],
+                ))
+          ],
+        ),
       ),
     );
   }
@@ -149,7 +130,9 @@ class _BillPageState extends State<BillPage> {
       return [
         IconButton(
           icon: Icon(Icons.delete),
-          onPressed: () {},
+          onPressed: () {
+            showDeleteDialog();
+          },
         )
       ];
     } else {
@@ -245,6 +228,29 @@ class _BillPageState extends State<BillPage> {
           });
         },
         child: Text("CHANGE"),
+      ),
+    );
+  }
+
+  void showDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Delete bill"),
+        content: Text("Do you really want to delete this bill?"),
+        actions: <Widget>[
+          MaterialButton(
+            child: Text("CANCEL"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          MaterialButton(
+            child: Text("DELETE"),
+            onPressed: () {
+              dataManager.deleteBill(widget.bill);
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          )
+        ],
       ),
     );
   }

@@ -31,6 +31,7 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      key: Key(widget.category.id),
       leading: CircleAvatar(
         backgroundColor: widget.category.usableColor,
         child: widget.editMode

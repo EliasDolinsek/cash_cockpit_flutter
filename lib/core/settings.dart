@@ -6,14 +6,14 @@ import 'currency.dart';
 class Settings {
   //ISO 4217
   String currencyISOCode, centSeparatorSymbol, thousandSeparatorSymbol;
-  double balance, wantedMonthlySaveUps;
+  double balance, desiredMonthlySaveUps;
 
   Settings(
       {this.currencyISOCode,
       this.centSeparatorSymbol,
       this.thousandSeparatorSymbol,
       this.balance,
-      this.wantedMonthlySaveUps});
+      this.desiredMonthlySaveUps});
 
   factory Settings.defaultSettings() {
     return Settings(
@@ -21,20 +21,19 @@ class Settings {
       centSeparatorSymbol: ",",
       thousandSeparatorSymbol: ".",
       balance: 0,
-      wantedMonthlySaveUps: 0,
+      desiredMonthlySaveUps: 0,
     );
   }
 
   factory Settings.fromFirestore(DocumentSnapshot documentSnapshot) {
     final map = documentSnapshot.data;
     if (map == null) return Settings.defaultSettings();
-
     return Settings(
         currencyISOCode: map["currencyISOCode"] ?? "EUR",
         centSeparatorSymbol: map["centSeparatorSymbol"] ?? ",",
         thousandSeparatorSymbol: map["thousandSeparatorSymbol"] ?? ".",
-        balance: map["balance"] ?? 0,
-        wantedMonthlySaveUps: map["wantedMonthlySaveUps"] ?? 0);
+        balance: map["balance"] ?? 0.0,
+        desiredMonthlySaveUps: map["desiredMonthlySaveUps"] ?? 0.0);
   }
 
   factory Settings.fromFirebase(FirebaseUser user) {
@@ -54,6 +53,8 @@ class Settings {
     currencyISOCode = settings.currencyISOCode;
     centSeparatorSymbol = settings.centSeparatorSymbol;
     thousandSeparatorSymbol = settings.thousandSeparatorSymbol;
+    balance = settings.balance;
+    desiredMonthlySaveUps = settings.desiredMonthlySaveUps;
   }
 
   Currency get currency => Currency.fromISOCode(currencyISOCode);
@@ -66,7 +67,7 @@ class Settings {
       "centSeparatorSymbol": centSeparatorSymbol,
       "thousandSeparatorSymbol": thousandSeparatorSymbol,
       "balance": balance,
-      "wantedMonthlySaveUps": wantedMonthlySaveUps
+      "desiredMonthlySaveUps": desiredMonthlySaveUps
     };
   }
 }

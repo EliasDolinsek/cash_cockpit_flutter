@@ -11,6 +11,7 @@ class MoneyStatisticsCard extends StatefulWidget {
 }
 
 class _MoneyStatisticsCardState extends State<MoneyStatisticsCard> {
+
   final defaultTextsStyle =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 0.15);
 
@@ -24,9 +25,13 @@ class _MoneyStatisticsCardState extends State<MoneyStatisticsCard> {
     return StatisticsCard(
       statistic: Column(
         children: <Widget>[
-          AmountText(
-            amountText: dataCalculator.calculateCash(bills, settings),
-            lowerText: "CASH",
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: AmountText(
+              amount: dataCalculator.calculateCash(bills, settings),
+              lowerText: "CASH",
+              redWhenNegative: true,
+            ),
           ),
           SizedBox(
             height: 16.0,
@@ -40,18 +45,10 @@ class _MoneyStatisticsCardState extends State<MoneyStatisticsCard> {
             ),
           ),
           ListTile(
-            title: Text("Total outcomes", style: defaultTextsStyle),
-            trailing: Text(
-              currencyFormatter
-                  .formatAmount(dataCalculator.calculateTotalOutcomes(bills)),
-              style: defaultTextsStyle,
-            ),
-          ),
-          ListTile(
             title: Text("Credit Rate", style: defaultTextsStyle),
             trailing: Text(
               currencyFormatter
-                  .formatAmount(dataCalculator.calculateTotalOutcomes(bills)),
+                  .formatAmount(dataCalculator.calculateCreditRate(bills, settings)),
               style: defaultTextsStyle,
             ),
           ),
@@ -68,7 +65,7 @@ class _MoneyStatisticsCardState extends State<MoneyStatisticsCard> {
     final dataProvider = DataProvider.of(context);
     final balance = dataProvider.settings.currencyFormatter
         .formatAmount(dataProvider.settings.balance);
-    final monthlySaveUps = dataProvider.settings.currencyFormatter.formatAmount(dataProvider.settings.wantedMonthlySaveUps);
+    final monthlySaveUps = dataProvider.settings.currencyFormatter.formatAmount(dataProvider.settings.desiredMonthlySaveUps);
 
     return Column(
       children: <Widget>[

@@ -87,14 +87,17 @@ class CurrencyFormatter {
         settings.currency.currencySymbolAlignment == CurrencySymbolAlignment.RIGHT;
     final currencySymbol = settings.currency.currencySymbol;
 
-    final controller = MoneyMaskedTextController(
+    final controller =  MoneyMaskedTextController(
       initialValue: amount,
       decimalSeparator: settings.centSeparatorSymbol,
       thousandSeparator: settings.thousandSeparatorSymbol,
       rightSymbol: alignCurrencySymbolRight ? currencySymbol : "",
       leftSymbol: !alignCurrencySymbolRight ? currencySymbol : "",);
 
-    controller.selection = TextSelection.collapsed(offset: controller.value.text.length);
+    controller.addListener((){
+      final offset = controller.value.text.length - (alignCurrencySymbolRight ? 1 : 0);
+      controller.selection = TextSelection.collapsed(offset: offset);
+    });
 
     return controller;
   }

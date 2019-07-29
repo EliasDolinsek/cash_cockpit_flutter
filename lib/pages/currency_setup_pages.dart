@@ -99,7 +99,7 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
   Widget _buildAmountText() {
     return AmountText(
-      amountText: 1000,
+      amount: 1000,
       lowerText: "EXAMPLE",
     );
   }

@@ -81,7 +81,7 @@ class _ImagesListState extends State<ImagesList> {
     } else {
       return Center(
         child: IconButton(
-          icon: Icon(Icons.add),
+          icon: Icon(Icons.add_photo_alternate),
           onPressed: () => _showImageSourceSelection(context),
         ),
       );

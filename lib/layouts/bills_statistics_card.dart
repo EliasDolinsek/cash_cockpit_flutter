@@ -18,10 +18,6 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
   void initState() {
     super.initState();
     _selectedStatisticOption = DefaultStatisticsOptions.amountBased;
-    Future.delayed(Duration.zero, () {
-      final dataProvider = DataProvider.of(context);
-      dataProvider.monthDataProvider.onChange = () => setState(() {});
-    });
   }
 
   @override

@@ -14,7 +14,7 @@ double calculateDailyLimit(List<Bill> bills, Settings settings) {
   return settings.balance +
       calculateTotalIncomes(bills) -
       calculateTotalOutcomes(bills) -
-      settings.wantedMonthlySaveUps;
+      settings.desiredMonthlySaveUps;
 }
 
 double calculateCash(List<Bill> bills, Settings settings) {
@@ -28,6 +28,6 @@ double calculateBalanceBasedCash(List<Bill> bills, Settings settings) {
 }
 
 double calculateCreditRate(List<Bill> bills, Settings settings) {
-  return calculateBalanceBasedCash(bills, settings) -
-      settings.wantedMonthlySaveUps;
+  return calculateCash(bills, settings) -
+      settings.desiredMonthlySaveUps;
 }

@@ -21,7 +21,9 @@ class _HistoryLayoutState extends State<HistoryLayout> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, (){
-      DataProvider.of(context).monthDataProvider.onChange = () => setState((){});
+      final dataProvider = DataProvider.of(context);
+      dataProvider.monthDataProvider.onChange = () => setState((){});
+      dataProvider.categoriesProvider.onChanged = () => setState((){});
     });
   }
 
