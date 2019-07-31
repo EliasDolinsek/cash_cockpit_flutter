@@ -21,15 +21,16 @@ class _SettingsLayoutState extends State<SettingsLayout> {
         title: Text("Currency and formatting settings"),
         subtitle: Text("Currency selection and separator settings for amounts"),
         onTap: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => CurrencySetupPage()));
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => CurrencySetupPage(showDoneButton: false)));
         },
       ),
       ListTile(
         title: Text("Categories"),
         subtitle: Text("Create, edit and delete categories"),
-        onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => CategoriesEditorPage()));
+        onTap: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => CategoriesEditorPage()));
         },
       )
     ];

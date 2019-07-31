@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../data/data_provider.dart';
 
 class AmountText extends StatefulWidget {
-
   final double amount;
   final String lowerText;
   final bool editable, redWhenNegative, autoFocus;
@@ -22,14 +21,14 @@ class AmountText extends StatefulWidget {
 }
 
 class _AmountTextState extends State<AmountText> {
-
   final _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    if(widget.autoFocus){
-      Future.delayed(Duration.zero, () => FocusScope.of(context).requestFocus(_focusNode));
+    if (widget.autoFocus) {
+      Future.delayed(
+          Duration.zero, () => FocusScope.of(context).requestFocus(_focusNode));
     }
   }
 
@@ -55,13 +54,14 @@ class _AmountTextState extends State<AmountText> {
     final style = TextStyle(
         fontSize: 34,
         letterSpacing: 0.25,
-        color: widget.redWhenNegative && widget.amount < 0 ? Colors.red : Colors.black);
+        color: widget.redWhenNegative && widget.amount < 0
+            ? Colors.red
+            : Colors.black);
     final dataProvider = DataProvider.of(context);
-    final currencyController = dataProvider.settings.currencyFormatter
-        .getCurrencyTextController(widget.amount ?? 0.0);
 
-    currencyController.addListener(() {
-      widget.onTextChanged(currencyController.numberValue);
+    final currencyController = dataProvider.settings.currencyFormatter
+        .getCurrencyTextController(widget.amount ?? 0.0, (value) {
+      widget.onTextChanged(value);
     });
 
     return widget.editable
@@ -75,7 +75,6 @@ class _AmountTextState extends State<AmountText> {
             style: style,
             keyboardType: TextInputType.numberWithOptions(
                 signed: widget.amount < 0, decimal: true),
-            onChanged: widget.onTextChanged ?? (value) {},
             focusNode: _focusNode,
           )
         : Padding(

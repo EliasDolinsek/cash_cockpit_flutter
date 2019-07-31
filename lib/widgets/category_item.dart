@@ -12,7 +12,7 @@ class CategoryItem extends StatefulWidget {
   final Category category;
   final Function onCategorySelected;
 
-  const CategoryItem(this.category, {this.editMode = false, this.onCategorySelected(Category category)});
+  const CategoryItem(this.category, {this.editMode = false, this.onCategorySelected(Category category), Key key}) : super(key: key);
 
   @override
   _CategoryItemState createState() => _CategoryItemState();
@@ -31,7 +31,6 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      key: Key(widget.category.id),
       leading: CircleAvatar(
         backgroundColor: widget.category.usableColor,
         child: widget.editMode

@@ -8,15 +8,17 @@ import '../widgets/currency_separators_selection.dart';
 import '../data/data_manager.dart' as dataManager;
 
 class CurrencySetupPage extends StatefulWidget {
+  final bool showBackButton, showDoneButton;
 
-  final bool showBackButton;
+  const CurrencySetupPage(
+      {this.showBackButton = true, this.showDoneButton = true});
 
-  const CurrencySetupPage({this.showBackButton = true});
   @override
   _CurrencySetupPageState createState() => _CurrencySetupPageState();
 }
 
 class _CurrencySetupPageState extends State<CurrencySetupPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,17 +30,7 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
         ),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: () {
-              final dataProvider = DataProvider.of(context);
-              dataManager.setUserSettings(
-                  dataProvider.settings, dataProvider.firebaseUser.uid);
-              Navigator.pop(context);
-            },
-          ),
-        ],
+        actions: _buildActions(),
       ),
       body: OrientationBuilder(builder: (context, orientation) {
         if (orientation == Orientation.portrait) {
@@ -108,7 +100,9 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
     return CurrencySelection(
       onCurrencySelected: (currencyISOCode) {
         setState(() {
-          DataProvider.of(context).settings.currencyISOCode = currencyISOCode;
+          final dataProvider = DataProvider.of(context);
+          dataProvider.settings.currencyISOCode = currencyISOCode;
+          dataManager.setUserSettings(dataProvider.settings, dataProvider.firebaseUser.uid);
         });
       },
     );
@@ -116,16 +110,29 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
   Widget _buildSeparatorsSelection() {
     return CurrencySeparatorsSelection(
-          (centSeparator, thousandSeparator) {
+      (centSeparator, thousandSeparator) {
         setState(
-              () {
-            final settings = DataProvider.of(context).settings;
-            settings.centSeparatorSymbol = centSeparator;
-            settings.thousandSeparatorSymbol =
-                thousandSeparator;
+          () {
+            final dataProvider = DataProvider.of(context);
+            dataProvider.settings.centSeparatorSymbol = centSeparator;
+            dataProvider.settings.thousandSeparatorSymbol = thousandSeparator;
+            dataManager.setUserSettings(dataProvider.settings, dataProvider.firebaseUser.uid);
           },
         );
       },
     );
+  }
+
+  List<Widget> _buildActions() {
+    if (widget.showDoneButton) {
+      return <Widget>[
+        IconButton(
+          icon: Icon(Icons.check),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ];
+    } else {
+      return null;
+    }
   }
 }

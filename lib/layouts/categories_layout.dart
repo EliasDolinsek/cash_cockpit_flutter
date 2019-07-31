@@ -34,8 +34,10 @@ class _CategoriesLayoutState extends State<CategoriesLayout> {
     final categories = DataProvider.of(context).categoriesProvider.categoeries;
     return ListView.separated(
         itemBuilder: (context, index) {
+          final category = categories.elementAt(index);
           return CategoryItem(
-            categories.elementAt(index),
+            category,
+            key: Key(category.id),
             editMode: widget.editMode,
             onCategorySelected: widget.onCategorySelected,
           );
