@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/category_item.dart';
@@ -6,7 +5,6 @@ import '../widgets/category_item.dart';
 import '../core/category.dart';
 
 import '../data/data_provider.dart';
-import '../data/data_manager.dart' as dataManager;
 
 class CategoriesLayout extends StatefulWidget {
 
@@ -22,29 +20,32 @@ class CategoriesLayout extends StatefulWidget {
 class _CategoriesLayoutState extends State<CategoriesLayout> {
 
   @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, (){
-      DataProvider.of(context).categoriesProvider.onChanged = () => setState((){});
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final categories = DataProvider.of(context).categoriesProvider.categoeries;
-    return ListView.separated(
-        itemBuilder: (context, index) {
-          final category = categories.elementAt(index);
-          return CategoryItem(
-            category,
-            key: Key(category.id),
-            editMode: widget.editMode,
-            onCategorySelected: widget.onCategorySelected,
+    return StreamBuilder(
+      stream: DataProvider.of(context).categories,
+      builder: (context, snapshot){
+        if(snapshot.hasData){
+          final categories = snapshot.data;
+          return ListView.separated(
+              itemBuilder: (context, index) {
+                final category = categories.elementAt(index);
+                return CategoryItem(
+                  category,
+                  key: Key(category.id),
+                  editMode: widget.editMode,
+                  onCategorySelected: widget.onCategorySelected,
+                );
+              },
+              separatorBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(bottom: 4.0),
+              ),
+              itemCount: categories.length);
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
           );
-        },
-        separatorBuilder: (context, index) => Padding(
-          padding: EdgeInsets.only(bottom: 4.0),
-        ),
-        itemCount: categories.length);
+        }
+      },
+    );
   }
 }

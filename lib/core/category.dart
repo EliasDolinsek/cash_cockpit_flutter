@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'bill.dart';
+
 class Category {
 
   String name, color, id;
@@ -24,6 +26,10 @@ class Category {
       color: map["color"] ?? "",
       billIDs: List<String>.from(map["billIDs"]) ?? []
     );
+  }
+
+  static List<Bill> getBillsOfCategory(Category category, List<Bill> bills) {
+    return bills.where((b) => category.billIDs.contains(b.id)).toList();
   }
 
   Map<String, dynamic> toMap(String firebaseUserID) {

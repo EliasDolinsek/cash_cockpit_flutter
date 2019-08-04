@@ -81,7 +81,7 @@ class _CategoryItemState extends State<CategoryItem> {
                   icon: Icon(Icons.check),
                   onPressed: () {
                     widget.category.name = _name;
-                    dataManager.updateCategory(widget.category, DataProvider.of(context).firebaseUser.uid);
+                    DataProvider.of(context).updateCategory(widget.category);
                   },
                 )
               : Container(),
@@ -117,7 +117,7 @@ class _CategoryItemState extends State<CategoryItem> {
               MaterialButton(
                 child: Text("DELETE"),
                 onPressed: () {
-                  dataManager.deleteCategory(widget.category);
+                  DataProvider.of(context).deleteCategory(widget.category);
                   Navigator.pop(context);
                 },
               )
@@ -137,7 +137,7 @@ class _CategoryItemState extends State<CategoryItem> {
               setState(() {
                 widget.category.color = color.value.toString();
               });
-              dataManager.updateCategory(widget.category, DataProvider.of(context).firebaseUser.uid);
+              DataProvider.of(context).updateCategory(widget.category);
             },
             selectedColor: widget.category.usableColor,
           ),

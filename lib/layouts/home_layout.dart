@@ -6,23 +6,7 @@ import '../layouts/categories_statistics_card.dart';
 
 import '../data/data_provider.dart';
 
-class HomeLayout extends StatefulWidget {
-  @override
-  _HomeLayoutState createState() => _HomeLayoutState();
-}
-
-class _HomeLayoutState extends State<HomeLayout> {
-
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      DataProvider.of(context).monthDataProvider.onMonthChanged = () {
-        setState(() {});
-      };
-    });
-  }
+class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +14,19 @@ class _HomeLayoutState extends State<HomeLayout> {
       children: <Widget>[
         MoneyStatisticsCard(),
         BillsStatisticsCard(),
-        CategoriesStatisticsCard()
+        FutureBuilder(
+          future: DataProvider.of(context).categories.first,
+          builder: (context, snapshot){
+            if(snapshot.connectionState == ConnectionState.done){
+              return CategoriesStatisticsCard(
+                categories: snapshot.data,
+                bills: DataProvider.of(context).monthDataProvider.bills,
+              );
+            } else {
+              return Text("Loading categories statistics...");
+            }
+          },
+        )
       ],
     );
   }

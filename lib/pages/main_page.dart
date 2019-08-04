@@ -26,6 +26,16 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      DataProvider.of(context).monthDataProvider.onChange = () {
+        setState(() {});
+      };
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +52,10 @@ class _MainPageState extends State<MainPage> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   items: [
-                    DropdownMenuItem(child: Text(DataProvider.of(context).monthDataProvider.monthAsString)),
+                    DropdownMenuItem(
+                        child: Text(DataProvider.of(context)
+                            .monthDataProvider
+                            .monthAsString)),
                     DropdownMenuItem(
                       child: Text("CHANGE"),
                       value: "change",
@@ -84,8 +97,10 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton.extended(
               onPressed: () {
-                final bill = Bill.newBill(DataProvider.of(context).monthDataProvider.monthAsString);
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => BillPage(bill, false)));
+                final bill = Bill.newBill(
+                    DataProvider.of(context).monthDataProvider.monthAsString);
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => BillPage(bill, false)));
               },
               label: Text("ADD BILL"))
           : null,
@@ -97,7 +112,7 @@ class _MainPageState extends State<MainPage> {
       context: context,
       initialDate: DataProvider.of(context).monthDataProvider.month,
     ).then((DateTime dateTime) {
-      if(dateTime == null) return;
+      if (dateTime == null) return;
       setState(() {
         DataProvider.of(context).monthDataProvider.setupMonth(dateTime);
       });

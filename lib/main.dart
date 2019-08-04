@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'data/categories_provider.dart';
 import 'data/data_provider.dart';
 import 'data/month_data_provider.dart';
 import 'data/data_manager.dart' as dataManager;
@@ -42,10 +41,6 @@ class MyApp extends StatelessWidget {
           final firebaseUser = snapshot.data;
           return DataProvider(
             firebaseUser: firebaseUser,
-            categoriesProvider: CategoriesProvider(Firestore.instance
-                .collection("categories")
-                .where("userID", isEqualTo: firebaseUser.uid)
-                .snapshots()),
             settings: Settings.fromFirebase(firebaseUser),
             monthDataProvider: MonthDataProvider(
                 month: DateTime.now(), firebaseUserID: firebaseUser.uid),
@@ -54,6 +49,15 @@ class MyApp extends StatelessWidget {
               theme: appTheme,
               home: _buildPageForFirebaseUser(firebaseUser.uid),
             ),
+            billsStream: Firestore.instance
+                .collection("bills")
+                .where("userID", isEqualTo: firebaseUser.uid)
+                .where("month", isEqualTo: "JUL 2019")
+                .snapshots(),
+            categoriesStream: Firestore.instance
+                .collection("categories")
+                .where("userID", isEqualTo: firebaseUser.uid)
+                .snapshots(),
           );
         }
       },

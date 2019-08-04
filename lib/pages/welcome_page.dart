@@ -1,14 +1,13 @@
+import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'currency_setup_pages.dart';
 import 'main_page.dart';
 
-import '../data/data_manager.dart' as dataManager;
-
 class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    dataManager.createDefaultCategoriesIfNoExist(context);
+    createDefaultCategoriesIfNoExist(context);
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -65,5 +64,12 @@ class WelcomePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void createDefaultCategoriesIfNoExist(BuildContext context) async {
+    final dataProvider = DataProvider.of(context);
+    if ((await dataProvider.billsStream.first).documents.length == 0) {
+      dataProvider.createDefaultCategories();
+    }
   }
 }

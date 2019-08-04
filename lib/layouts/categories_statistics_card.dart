@@ -8,6 +8,21 @@ import '../data/data_provider.dart';
 import 'statistics_card.dart';
 
 class CategoriesStatisticsCard extends StatefulWidget {
+  final List<Category> categories;
+  final List<Bill> bills;
+
+  const CategoriesStatisticsCard(
+      {Key key, @required this.categories, @required this.bills})
+      : super(key: key);
+
+  List<Category> get usableCategories =>
+      categories.where((c) => c.billIDs.length != 0).toList();
+
+  List<Category> get usableAmountBasedCategories => usableCategories
+      .where((c) =>
+          Bill.getBillsTotalAmount(Category.getBillsOfCategory(c, bills)) != 0)
+      .toList();
+
   @override
   _CategoriesStatisticsCardState createState() =>
       _CategoriesStatisticsCardState();
@@ -34,10 +49,6 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
         textAlign: TextAlign.left,
       ),
       options: Row(
-        /*
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-         */
         children: <Widget>[
           ChoiceChip(
             label: Text("AMOUNT BASED"),
@@ -66,17 +77,41 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
         child: Container(
           width: 300,
           height: 300,
-          child: charts.PieChart(
-            _getChartSeries(),
-            defaultRenderer: charts.ArcRendererConfig(
-              arcWidth: 60,
-              arcRendererDecorators: [charts.ArcLabelDecorator()],
-            ),
-          ),
+          child: _buildStatistic(),
         ),
       ),
     );
   }
+
+  Widget _buildStatistic() {
+    if (_canBuildStatistics()) {
+      return charts.PieChart(
+        _getChartSeries(),
+        animate: true,
+        defaultRenderer: charts.ArcRendererConfig(
+          arcWidth: 60,
+          arcRendererDecorators: [charts.ArcLabelDecorator()],
+        ),
+      );
+    } else {
+      return Center(child: Text("No statistic available"));
+    }
+  }
+
+  bool _canBuildStatistics() =>
+      widget.categories != null && widget.usableCategories != null && widget.bills != null &&
+      ((_selectedStatisticOption == DefaultStatisticsOptions.amountBased &&
+              _canBuildAmountBasedStatistics()) ||
+          (_selectedStatisticOption == DefaultStatisticsOptions.usageBased &&
+              _canBuildUsageBasedStatistics()));
+
+  bool _canBuildAmountBasedStatistics() =>
+      widget.usableCategories != null &&
+      widget.usableAmountBasedCategories != null &&
+      widget.usableAmountBasedCategories.length != 0;
+
+  bool _canBuildUsageBasedStatistics() =>
+      widget.usableCategories != null && widget.usableCategories.length != 0;
 
   List<charts.Series<CategoryUsage, int>> _getChartSeries() {
     return [
@@ -95,30 +130,25 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
   }
 
   List<CategoryUsage> categoriesUsageAsList() {
-    final dataProvider = DataProvider.of(context);
+    final usableCategories =
+        widget.categories.where((c) => c.billIDs.length != 0).toList();
     if (_selectedStatisticOption == DefaultStatisticsOptions.amountBased) {
-      return categoriesUsageAmountBasedAsList(
-          dataProvider.categoriesProvider.categoeries,
-          dataProvider.monthDataProvider.bills);
+      return categoriesUsageAmountBasedAsList();
     } else {
-      return dataProvider.categoriesProvider.categoeries
+      return usableCategories
           .map((c) => CategoryUsage(c, c.billIDs.length))
           .toList();
     }
   }
 
-  List<CategoryUsage> categoriesUsageAmountBasedAsList(
-      List<Category> categories, List<Bill> usableBills) {
-    return categories
+  List<CategoryUsage> categoriesUsageAmountBasedAsList() {
+    return widget.usableAmountBasedCategories
         .map((category) => CategoryUsage(
             category,
             Bill.getBillsTotalAmount(
-                filterBillsOfCategory(category, usableBills)).toInt()))
+                    Category.getBillsOfCategory(category, widget.bills))
+                .toInt()))
         .toList();
-  }
-
-  List<Bill> filterBillsOfCategory(Category category, List<Bill> bills) {
-    return bills.where((b) => category.billIDs.contains(b.id)).toList();
   }
 }
 

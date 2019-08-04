@@ -18,16 +18,6 @@ class _HistoryLayoutState extends State<HistoryLayout> {
   DateTime month;
 
   @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, (){
-      final dataProvider = DataProvider.of(context);
-      dataProvider.monthDataProvider.onChange = () => setState((){});
-      dataProvider.categoriesProvider.onChanged = () => setState((){});
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return _buildBillsList(DataProvider.of(context).monthDataProvider.bills);
   }

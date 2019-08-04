@@ -5,12 +5,7 @@ import 'statistics_card.dart';
 import '../widgets/amount_text.dart';
 import '../data/data_calculator.dart' as dataCalculator;
 
-class MoneyStatisticsCard extends StatefulWidget {
-  @override
-  _MoneyStatisticsCardState createState() => _MoneyStatisticsCardState();
-}
-
-class _MoneyStatisticsCardState extends State<MoneyStatisticsCard> {
+class MoneyStatisticsCard extends StatelessWidget {
 
   final defaultTextsStyle =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 0.15);
@@ -55,13 +50,13 @@ class _MoneyStatisticsCardState extends State<MoneyStatisticsCard> {
           SizedBox(
             height: 16.0,
           ),
-          _buildBalanceNotice()
+          _buildBalanceNotice(context)
         ],
       ),
     );
   }
 
-  Widget _buildBalanceNotice() {
+  Widget _buildBalanceNotice(BuildContext context) {
     final dataProvider = DataProvider.of(context);
     final balance = dataProvider.settings.currencyFormatter
         .formatAmount(dataProvider.settings.balance);

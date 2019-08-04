@@ -32,6 +32,6 @@ class CategoriesEditorPage extends StatelessWidget {
   }
 
   void _addCategory(BuildContext context){
-    dataManager.createCategory(Category.newCategory(), DataProvider.of(context).firebaseUser.uid);
+    DataProvider.of(context).createCategory(Category.newCategory());
   }
 }

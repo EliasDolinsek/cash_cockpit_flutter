@@ -19,25 +19,8 @@ Future<bool> doUserSettingsExist(String firebaseUserID) async {
       .exists;
 }
 
-void createDefaultCategoriesIfNoExist(BuildContext context) {
-  final dataProvider = DataProvider.of(context);
-  if(dataProvider.categoriesProvider.categoeries.length == 0) {
-    return createDefaultCategories(dataProvider.firebaseUser.uid);
-  }
-}
-
 Future<dynamic> createUserSettings(Settings settings, String firebaseUserID) {
   return Firestore.instance.collection("users").document(firebaseUserID).setData(settings.toMap());
-}
-
-Future<dynamic> createCategory(Category category, String firebaseUserID){
-  return Firestore.instance.collection("categories").document().setData(category.toMap(firebaseUserID));
-}
-
-void createDefaultCategories(String firebaseUserID){
-  Category.getDefaultCategories().forEach((category){
-    createCategory(category, firebaseUserID);
-  });
 }
 
 Future<String> createBill(Bill bill, String firebaseUserID) async {
@@ -51,10 +34,6 @@ Future<void> updateUserSettings(Settings settings, String firebaseUserID) {
       .updateData(settings.toMap());
 }
 
-Future<void> updateCategory(Category category, String firebaseUserID){
-  return Firestore.instance.collection("categories").document(category.id).updateData(category.toMap(firebaseUserID));
-}
-
 Future<void> updateBill(Bill bill, String firebaseUserID){
   return Firestore.instance.collection("bills").document(bill.id).updateData(bill.toMap(firebaseUserID));
 }
@@ -65,10 +44,6 @@ Future<void> setUserSettings(Settings settings, String firebaseUserID) async {
   } else {
     return createUserSettings(settings, firebaseUserID);
   }
-}
-
-Future<void> deleteCategory(Category category){
-  return Firestore.instance.collection("categories").document(category.id).delete();
 }
 
 Future<void> deleteBill(Bill bill){

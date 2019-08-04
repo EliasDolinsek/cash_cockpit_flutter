@@ -13,6 +13,7 @@ import '../data/data_provider.dart';
 import '../data/data_manager.dart' as dataManager;
 
 class BillPage extends StatefulWidget {
+
   final Bill bill;
   final bool editMode;
 
@@ -29,30 +30,22 @@ class _BillPageState extends State<BillPage> {
   DataProvider _dataProvider;
   TextEditingController _nameController;
 
-  int billType;
-  double amount;
-  String name;
+  int _billType;
+  double _amount;
+  String _name;
   Category category;
 
   @override
   void initState() {
     super.initState();
-    billType = widget.bill.billType;
-    amount = widget.bill.amount;
-    name = widget.bill.name;
-    _nameController = TextEditingController(text: name)
-      ..selection = TextSelection.collapsed(offset: name.length);
-
-    Future.delayed(Duration.zero, () {
+    _billType = widget.bill.billType;
+    _amount = widget.bill.amount;
+    _name = widget.bill.name;
+    _nameController = TextEditingController(text: _name)
+      ..selection = TextSelection.collapsed(offset: _name.length);
+    
+    Future.delayed(Duration.zero, (){
       _dataProvider = DataProvider.of(context);
-
-      setState(() {
-        category = DataProvider.of(context)
-            .categoriesProvider
-            .categoeries
-            .firstWhere((c) => c.billIDs.contains(widget.bill.id),
-                orElse: () => null);
-      });
     });
   }
 
@@ -70,7 +63,7 @@ class _BillPageState extends State<BillPage> {
     if (category != null) {
       print(category.billIDs);
       if (!category.billIDs.contains(billID)) category.billIDs.add(billID);
-      dataManager.updateCategory(category, _dataProvider.firebaseUser.uid);
+      _dataProvider.updateCategory(category);
     }
   }
 
@@ -79,7 +72,7 @@ class _BillPageState extends State<BillPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(name.isNotEmpty ? name : "Bill",
+        title: Text(_name.isNotEmpty ? _name : "Bill",
             style: TextStyle(color: Colors.black)),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
@@ -93,12 +86,12 @@ class _BillPageState extends State<BillPage> {
             Flexible(
               flex: 3,
               child: AmountText(
-                amount: amount,
+                amount: _amount,
                 lowerText: "Amount",
                 editable: true,
                 autoFocus: true,
                 onTextChanged: (value) {
-                  amount = value;
+                  _amount = value;
                 },
               ),
             ),
@@ -157,10 +150,10 @@ class _BillPageState extends State<BillPage> {
             child: Text("+"),
           ),
           label: Text("INCOME"),
-          selected: billType == Bill.income,
+          selected: _billType == Bill.income,
           onSelected: (value) {
             setState(() {
-              billType = Bill.income;
+              _billType = Bill.income;
             });
           },
         ),
@@ -170,10 +163,10 @@ class _BillPageState extends State<BillPage> {
             child: Text("-"),
           ),
           label: Text("OUTCOME"),
-          selected: billType == Bill.outcome,
+          selected: _billType == Bill.outcome,
           onSelected: (value) {
             setState(() {
-              billType = Bill.outcome;
+              _billType = Bill.outcome;
             });
           },
         )
@@ -182,9 +175,9 @@ class _BillPageState extends State<BillPage> {
   }
 
   void updateBill() {
-    widget.bill.name = name;
-    widget.bill.billType = billType;
-    widget.bill.amount = amount;
+    widget.bill.name = _name;
+    widget.bill.billType = _billType;
+    widget.bill.amount = _amount;
 
     final firebaseUserID = _dataProvider.firebaseUser.uid;
     if (widget.editMode) {
@@ -203,7 +196,7 @@ class _BillPageState extends State<BillPage> {
       controller: _nameController,
       onChanged: (value) {
         setState(() {
-          name = value;
+          _name = value;
         });
       },
     );
