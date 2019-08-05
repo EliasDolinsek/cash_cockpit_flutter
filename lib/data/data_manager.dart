@@ -23,19 +23,11 @@ Future<dynamic> createUserSettings(Settings settings, String firebaseUserID) {
   return Firestore.instance.collection("users").document(firebaseUserID).setData(settings.toMap());
 }
 
-Future<String> createBill(Bill bill, String firebaseUserID) async {
-  return (await Firestore.instance.collection("bills").add(bill.toMap(firebaseUserID))).documentID;
-}
-
 Future<void> updateUserSettings(Settings settings, String firebaseUserID) {
   return Firestore.instance
       .collection("users")
       .document(firebaseUserID)
       .updateData(settings.toMap());
-}
-
-Future<void> updateBill(Bill bill, String firebaseUserID){
-  return Firestore.instance.collection("bills").document(bill.id).updateData(bill.toMap(firebaseUserID));
 }
 
 Future<void> setUserSettings(Settings settings, String firebaseUserID) async {
@@ -44,10 +36,6 @@ Future<void> setUserSettings(Settings settings, String firebaseUserID) async {
   } else {
     return createUserSettings(settings, firebaseUserID);
   }
-}
-
-Future<void> deleteBill(Bill bill){
-  return Firestore.instance.collection("bills").document(bill.id).delete();
 }
 
 void uploadFile(File file, String fileName, onUploaded(downloadURL)) {

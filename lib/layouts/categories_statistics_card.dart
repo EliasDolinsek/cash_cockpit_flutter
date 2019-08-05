@@ -4,7 +4,6 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import '../core/category.dart';
 import '../core/bill.dart';
 
-import '../data/data_provider.dart';
 import 'statistics_card.dart';
 
 class CategoriesStatisticsCard extends StatefulWidget {
@@ -130,12 +129,10 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
   }
 
   List<CategoryUsage> categoriesUsageAsList() {
-    final usableCategories =
-        widget.categories.where((c) => c.billIDs.length != 0).toList();
     if (_selectedStatisticOption == DefaultStatisticsOptions.amountBased) {
       return categoriesUsageAmountBasedAsList();
     } else {
-      return usableCategories
+      return widget.usableCategories
           .map((c) => CategoryUsage(c, c.billIDs.length))
           .toList();
     }

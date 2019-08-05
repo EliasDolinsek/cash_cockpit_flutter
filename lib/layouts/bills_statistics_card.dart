@@ -4,9 +4,16 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'statistics_card.dart';
 
 import '../core/bill.dart';
-import '../data/data_provider.dart';
 
 class BillsStatisticsCard extends StatefulWidget {
+
+  final List<Bill> bills;
+
+  List<Bill> get outcomeBills => Bill.filterBillsByType(bills, Bill.outcome);
+  List<Bill> get incomeBills => Bill.filterBillsByType(bills, Bill.income);
+
+  const BillsStatisticsCard({Key key, @required this.bills}) : super(key: key);
+
   @override
   _BillsStatisticsCardState createState() => _BillsStatisticsCardState();
 }
@@ -60,16 +67,24 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
         child: Container(
           width: 300,
           height: 300,
-          child: charts.PieChart(
-            _getChartSeries(),
-            defaultRenderer: charts.ArcRendererConfig(
-              arcWidth: 60,
-              arcRendererDecorators: [charts.ArcLabelDecorator()],
-            ),
-          ),
+          child: _buildStatistic(),
         ),
       ),
     );
+  }
+
+  Widget _buildStatistic(){
+    if(widget.bills == null || widget.bills.length == 0){
+      return Center(child: Text("No statistic available"));
+    } else {
+      return charts.PieChart(
+        _getChartSeries(),
+        defaultRenderer: charts.ArcRendererConfig(
+          arcWidth: 60,
+          arcRendererDecorators: [charts.ArcLabelDecorator()],
+        ),
+      );
+    }
   }
 
   List<charts.Series<BillTypeUsage, int>> _getChartSeries() {
@@ -88,24 +103,23 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
   }
 
   List<BillTypeUsage> billTypeUsageAsList() {
-    final dataProvider = DataProvider.of(context);
     if (_selectedStatisticOption == DefaultStatisticsOptions.amountBased) {
       return [
         BillTypeUsage(
             Bill.outcome,
             Bill.getBillsTotalAmount(
-                dataProvider.monthDataProvider.outcomeBills).toInt()),
+                widget.outcomeBills).toInt()),
         BillTypeUsage(
             Bill.income,
             Bill.getBillsTotalAmount(
-                dataProvider.monthDataProvider.incomeBills).toInt()),
+                widget.incomeBills).toInt()),
       ];
     } else {
       return [
         BillTypeUsage(
-            Bill.outcome, dataProvider.monthDataProvider.outcomeBills.length),
+            Bill.outcome, widget.outcomeBills.length),
         BillTypeUsage(
-            Bill.income, dataProvider.monthDataProvider.incomeBills.length),
+            Bill.income, widget.incomeBills.length),
       ];
     }
   }

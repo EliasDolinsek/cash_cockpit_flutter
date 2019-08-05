@@ -10,24 +10,39 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        MoneyStatisticsCard(),
-        BillsStatisticsCard(),
-        FutureBuilder(
-          future: DataProvider.of(context).categories.first,
-          builder: (context, snapshot){
-            if(snapshot.connectionState == ConnectionState.done){
-              return CategoriesStatisticsCard(
-                categories: snapshot.data,
-                bills: DataProvider.of(context).monthDataProvider.bills,
-              );
+    return StreamBuilder(
+      stream: DataProvider.of(context).categories,
+      builder: (context, categoriesSnapshot) {
+        return StreamBuilder(
+          stream: DataProvider.of(context).monthDataProvider.bills,
+          builder: (context, billsSnapshot) {
+            if (categoriesSnapshot.connectionState == ConnectionState.waiting ||
+                billsSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
             } else {
-              return Text("Loading categories statistics...");
+              if (categoriesSnapshot.hasData && billsSnapshot.hasData) {
+                return ListView(
+                  children: <Widget>[
+                    MoneyStatisticsCard(
+                      bills: billsSnapshot.data,
+                      settings: DataProvider.of(context).settings,
+                    ),
+                    BillsStatisticsCard(
+                      bills: billsSnapshot.data,
+                    ),
+                    CategoriesStatisticsCard(
+                      categories: categoriesSnapshot.data,
+                      bills: billsSnapshot.data,
+                    )
+                  ],
+                );
+              } else {
+                return Center(child: Text("No statistics available"));
+              }
             }
           },
-        )
-      ],
+        );
+      },
     );
   }
 }

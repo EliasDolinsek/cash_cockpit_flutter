@@ -17,6 +17,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+
   final _bodies = [
     HomeLayout(),
     HistoryLayout(),
@@ -24,16 +25,6 @@ class _MainPageState extends State<MainPage> {
   ];
 
   int _selectedIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      DataProvider.of(context).monthDataProvider.onChange = () {
-        setState(() {});
-      };
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

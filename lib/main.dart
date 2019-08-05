@@ -17,6 +17,7 @@ import 'pages/welcome_page.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
   final appTheme = ThemeData(
     primarySwatch: Colors.blue,
   );
@@ -49,15 +50,6 @@ class MyApp extends StatelessWidget {
               theme: appTheme,
               home: _buildPageForFirebaseUser(firebaseUser.uid),
             ),
-            billsStream: Firestore.instance
-                .collection("bills")
-                .where("userID", isEqualTo: firebaseUser.uid)
-                .where("month", isEqualTo: "JUL 2019")
-                .snapshots(),
-            categoriesStream: Firestore.instance
-                .collection("categories")
-                .where("userID", isEqualTo: firebaseUser.uid)
-                .snapshots(),
           );
         }
       },

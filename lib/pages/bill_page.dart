@@ -181,10 +181,10 @@ class _BillPageState extends State<BillPage> {
 
     final firebaseUserID = _dataProvider.firebaseUser.uid;
     if (widget.editMode) {
-      dataManager.updateBill(widget.bill, firebaseUserID);
+      DataProvider.of(context).updateBill(widget.bill);
     } else {
-      dataManager
-          .createBill(widget.bill, firebaseUserID)
+      DataProvider.of(context)
+          .createBill(widget.bill)
           .then((billID) => updateCategory(billID));
     }
   }
@@ -239,7 +239,7 @@ class _BillPageState extends State<BillPage> {
           MaterialButton(
             child: Text("DELETE"),
             onPressed: () {
-              dataManager.deleteBill(widget.bill);
+              DataProvider.of(context).deleteBill(widget.bill);
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
           )

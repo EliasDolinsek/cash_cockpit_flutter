@@ -1,3 +1,5 @@
+import 'package:cash_cockpit_app/core/bill.dart';
+import 'package:cash_cockpit_app/core/settings.dart';
 import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -6,19 +8,26 @@ import '../widgets/amount_text.dart';
 import '../data/data_calculator.dart' as dataCalculator;
 
 class MoneyStatisticsCard extends StatelessWidget {
+  final List<Bill> bills;
+  final Settings settings;
 
   final defaultTextsStyle =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 0.15);
 
+  MoneyStatisticsCard({Key key, @required this.bills, @required this.settings})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final bills = DataProvider.of(context).monthDataProvider.bills;
-    final settings = DataProvider.of(context).settings;
-    final currencyFormatter =
-        DataProvider.of(context).settings.currencyFormatter;
-
     return StatisticsCard(
-      statistic: Column(
+      statistic: _buildStatistic(context),
+    );
+  }
+
+  Widget _buildStatistic(BuildContext context) {
+    final currencyFormatter = settings.currencyFormatter;
+    if (bills != null && bills.length != 0) {
+      return Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -42,8 +51,8 @@ class MoneyStatisticsCard extends StatelessWidget {
           ListTile(
             title: Text("Credit Rate", style: defaultTextsStyle),
             trailing: Text(
-              currencyFormatter
-                  .formatAmount(dataCalculator.calculateCreditRate(bills, settings)),
+              currencyFormatter.formatAmount(
+                  dataCalculator.calculateCreditRate(bills, settings)),
               style: defaultTextsStyle,
             ),
           ),
@@ -52,21 +61,35 @@ class MoneyStatisticsCard extends StatelessWidget {
           ),
           _buildBalanceNotice(context)
         ],
-      ),
-    );
+      );
+    } else {
+      return Center(
+        child: Container(
+          width: 300,
+          height: 300,
+          child: Center(
+            child: Text("No statistics available"),
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildBalanceNotice(BuildContext context) {
     final dataProvider = DataProvider.of(context);
     final balance = dataProvider.settings.currencyFormatter
         .formatAmount(dataProvider.settings.balance);
-    final monthlySaveUps = dataProvider.settings.currencyFormatter.formatAmount(dataProvider.settings.desiredMonthlySaveUps);
+    final monthlySaveUps = dataProvider.settings.currencyFormatter
+        .formatAmount(dataProvider.settings.desiredMonthlySaveUps);
 
     return Column(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text("Based on a total balance of $balance and desired monthly savups of $monthlySaveUps", textAlign: TextAlign.justify,),
+          child: Text(
+            "Based on a total balance of $balance and desired monthly savups of $monthlySaveUps",
+            textAlign: TextAlign.justify,
+          ),
         ),
         MaterialButton(
           child: Text("CHANGE"),

@@ -68,7 +68,7 @@ class WelcomePage extends StatelessWidget {
 
   void createDefaultCategoriesIfNoExist(BuildContext context) async {
     final dataProvider = DataProvider.of(context);
-    if ((await dataProvider.billsStream.first).documents.length == 0) {
+    if ((await dataProvider.monthDataProvider.bills.first).length == 0) {
       dataProvider.createDefaultCategories();
     }
   }
