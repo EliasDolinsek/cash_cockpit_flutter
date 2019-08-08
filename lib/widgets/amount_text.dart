@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/data_provider.dart';
+import '../data/config_provider.dart';
 
 class AmountText extends StatefulWidget {
   final double amount;
@@ -57,7 +57,7 @@ class _AmountTextState extends State<AmountText> {
         color: widget.redWhenNegative && widget.amount < 0
             ? Colors.red
             : Colors.black);
-    final dataProvider = DataProvider.of(context);
+    final dataProvider = ConfigProvider.of(context);
 
     final currencyController = dataProvider.settings.currencyFormatter
         .getCurrencyTextController(widget.amount ?? 0.0, (value) {

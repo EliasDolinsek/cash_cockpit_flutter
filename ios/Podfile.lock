@@ -211,11 +211,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
-  cloud_firestore: 5698a9bd01b94fd31e7b7b56d8fe1665f4fb43cb
+  cloud_firestore: 41f84086d2e1a5c216a6af07ef050758de825ff0
   Firebase: 8d77bb33624ae9b62d745d82ec023de5f70f7e4f
-  firebase_auth: 3b8e685dbf2519d315265f3d2283da3fd0711ee3
-  firebase_core: 44f31f51532812598f0f9f4af0caa705b9edfc19
-  firebase_storage: ad2e96fb734b0254a42adba43f9aafb77de84d0a
+  firebase_auth: 00d6e1ab6d890cd6d3c624df61702e3a7072d1e3
+  firebase_core: b3b02d0b5e9d01aab5e50ba7cbcf84c73cb6883c
+  firebase_storage: 2251e73d2d6239f72243ef422969d8baa76d3012
   FirebaseAnalytics: 629301c2b9925f3537d4093a17a72751ae5b7084
   FirebaseAuth: 4281d6d98a90881e00710fa8d9e37c2ccdfc7d80
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc

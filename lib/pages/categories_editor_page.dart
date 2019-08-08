@@ -4,7 +4,7 @@ import '../layouts/categories_layout.dart';
 
 import '../core/category.dart';
 
-import '../data/data_provider.dart';
+import '../data/config_provider.dart';
 import '../data/data_manager.dart' as dataManager;
 
 class CategoriesEditorPage extends StatelessWidget {
@@ -32,6 +32,6 @@ class CategoriesEditorPage extends StatelessWidget {
   }
 
   void _addCategory(BuildContext context){
-    DataProvider.of(context).createCategory(Category.newCategory());
+    ConfigProvider.of(context).createCategory(Category.newCategory());
   }
 }

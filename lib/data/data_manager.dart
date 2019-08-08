@@ -8,35 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../core/bill.dart';
 import '../core/settings.dart';
 import '../core/category.dart';
-import 'data_provider.dart';
-
-Future<bool> doUserSettingsExist(String firebaseUserID) async {
-  return (await Firestore.instance
-          .collection("users")
-          .document(firebaseUserID)
-          .snapshots()
-          .first)
-      .exists;
-}
-
-Future<dynamic> createUserSettings(Settings settings, String firebaseUserID) {
-  return Firestore.instance.collection("users").document(firebaseUserID).setData(settings.toMap());
-}
-
-Future<void> updateUserSettings(Settings settings, String firebaseUserID) {
-  return Firestore.instance
-      .collection("users")
-      .document(firebaseUserID)
-      .updateData(settings.toMap());
-}
-
-Future<void> setUserSettings(Settings settings, String firebaseUserID) async {
-  if (await doUserSettingsExist(firebaseUserID)) {
-    return updateUserSettings(settings, firebaseUserID);
-  } else {
-    return createUserSettings(settings, firebaseUserID);
-  }
-}
+import 'config_provider.dart';
 
 void uploadFile(File file, String fileName, onUploaded(downloadURL)) {
   final StorageReference storageReference = FirebaseStorage.instance

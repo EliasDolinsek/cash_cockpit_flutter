@@ -1,4 +1,5 @@
 import 'package:cash_cockpit_app/core/category.dart';
+import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -9,15 +10,15 @@ import '../layouts/images_list.dart';
 
 import 'select_category_page.dart';
 
-import '../data/data_provider.dart';
-import '../data/data_manager.dart' as dataManager;
+import '../data/config_provider.dart';
 
 class BillPage extends StatefulWidget {
 
   final Bill bill;
   final bool editMode;
+  final DataProvider dataProvider;
 
-  const BillPage(this.bill, this.editMode);
+  const BillPage(this.bill, this.editMode, this.dataProvider);
 
   @override
   _BillPageState createState() => _BillPageState();
@@ -27,13 +28,13 @@ class _BillPageState extends State<BillPage> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  DataProvider _dataProvider;
+  ConfigProvider _dataProvider;
   TextEditingController _nameController;
 
   int _billType;
   double _amount;
   String _name;
-  Category category;
+  Category _category;
 
   @override
   void initState() {
@@ -43,9 +44,10 @@ class _BillPageState extends State<BillPage> {
     _name = widget.bill.name;
     _nameController = TextEditingController(text: _name)
       ..selection = TextSelection.collapsed(offset: _name.length);
+    _category = widget.dataProvider.categories.firstWhere((c) =>c.billIDs.contains(widget.bill.id), orElse: () => null);
     
     Future.delayed(Duration.zero, (){
-      _dataProvider = DataProvider.of(context);
+      _dataProvider = ConfigProvider.of(context);
     });
   }
 
@@ -60,10 +62,10 @@ class _BillPageState extends State<BillPage> {
   }
 
   void updateCategory(String billID) {
-    if (category != null) {
-      print(category.billIDs);
-      if (!category.billIDs.contains(billID)) category.billIDs.add(billID);
-      _dataProvider.updateCategory(category);
+    if (_category != null) {
+      print(_category.billIDs);
+      if (!_category.billIDs.contains(billID)) _category.billIDs.add(billID);
+      _dataProvider.updateCategory(_category);
     }
   }
 
@@ -179,11 +181,10 @@ class _BillPageState extends State<BillPage> {
     widget.bill.billType = _billType;
     widget.bill.amount = _amount;
 
-    final firebaseUserID = _dataProvider.firebaseUser.uid;
     if (widget.editMode) {
-      DataProvider.of(context).updateBill(widget.bill);
+      _dataProvider.updateBill(widget.bill);
     } else {
-      DataProvider.of(context)
+      _dataProvider
           .createBill(widget.bill)
           .then((billID) => updateCategory(billID));
     }
@@ -206,9 +207,9 @@ class _BillPageState extends State<BillPage> {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor:
-            category == null ? Colors.black : Color(int.parse(category.color)),
+            _category == null ? Colors.black : Color(int.parse(_category.color)),
       ),
-      title: Text(category == null ? "No category" : category.name),
+      title: Text(_category == null ? "No category" : _category.name),
       trailing: MaterialButton(
         onPressed: () {
           Navigator.of(context)
@@ -216,7 +217,7 @@ class _BillPageState extends State<BillPage> {
                   MaterialPageRoute(builder: (context) => SelectCategoryPage()))
               .then((category) {
             setState(() {
-              this.category = category;
+              this._category = category;
             });
           });
         },
@@ -239,7 +240,7 @@ class _BillPageState extends State<BillPage> {
           MaterialButton(
             child: Text("DELETE"),
             onPressed: () {
-              DataProvider.of(context).deleteBill(widget.bill);
+              _dataProvider.deleteBill(widget.bill);
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
           )

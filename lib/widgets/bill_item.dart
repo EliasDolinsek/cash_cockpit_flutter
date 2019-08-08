@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/bill.dart';
 
-import '../data/data_provider.dart';
+import '../data/config_provider.dart';
 
 class BillItem extends StatelessWidget {
 
@@ -14,7 +14,7 @@ class BillItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currencyFormatter =
-        DataProvider.of(context).settings.currencyFormatter;
+        ConfigProvider.of(context).settings.currencyFormatter;
     return InkWell(
       onTap: onPressed,
       child: Padding(

@@ -33,6 +33,8 @@ class Bill {
         id: documentSnapshot.documentID);
   }
 
+  static Bill findBill(String id, List<Bill> bills) => bills.firstWhere((bill) => bill.id == id, orElse: () => null);
+
   static String billTypeAsString(int type) => type == outcome ? "OUTCOME" : "INCOME";
 
   Map<String, dynamic> toMap(String firebaseUserID) {

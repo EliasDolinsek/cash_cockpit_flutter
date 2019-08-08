@@ -1,4 +1,4 @@
-import 'package:cash_cockpit_app/data/data_provider.dart';
+import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/amount_text.dart';
@@ -100,9 +100,9 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
     return CurrencySelection(
       onCurrencySelected: (currencyISOCode) {
         setState(() {
-          final dataProvider = DataProvider.of(context);
-          dataProvider.settings.currencyISOCode = currencyISOCode;
-          dataManager.setUserSettings(dataProvider.settings, dataProvider.firebaseUser.uid);
+          final configProvider = ConfigProvider.of(context);
+          configProvider.settings.currencyISOCode = currencyISOCode;
+          configProvider.setUserSettings(configProvider.settings, configProvider.firebaseUser.uid);
         });
       },
     );
@@ -113,10 +113,10 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
       (centSeparator, thousandSeparator) {
         setState(
           () {
-            final dataProvider = DataProvider.of(context);
-            dataProvider.settings.centSeparatorSymbol = centSeparator;
-            dataProvider.settings.thousandSeparatorSymbol = thousandSeparator;
-            dataManager.setUserSettings(dataProvider.settings, dataProvider.firebaseUser.uid);
+            final configProvider = ConfigProvider.of(context);
+            configProvider.settings.centSeparatorSymbol = centSeparator;
+            configProvider.settings.thousandSeparatorSymbol = thousandSeparator;
+            configProvider.setUserSettings(configProvider.settings, configProvider.firebaseUser.uid);
           },
         );
       },

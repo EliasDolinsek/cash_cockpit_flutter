@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/data_provider.dart';
+import '../data/config_provider.dart';
 
 class CurrencySeparatorsSelection extends StatelessWidget {
   final Function(String centSeparationSymbol, String thousandSeparationSymbol)
@@ -10,7 +10,7 @@ class CurrencySeparatorsSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = DataProvider.of(context).settings;
+    final settings = ConfigProvider.of(context).settings;
     return Column(
       children: <Widget>[
         Text(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/data_provider.dart';
+import '../data/config_provider.dart';
 import '../core/currency.dart';
 
 class CurrencySelection extends StatelessWidget
@@ -40,6 +40,6 @@ class CurrencySelection extends StatelessWidget
   }
 
   bool _isCurrencyActiveCurrency(Currency currency, BuildContext context){
-    return DataProvider.of(context).settings.currencyISOCode == currency.isoCode;
+    return ConfigProvider.of(context).settings.currencyISOCode == currency.isoCode;
   }
 }

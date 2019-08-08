@@ -3,7 +3,7 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 
 import '../core/category.dart';
 
-import '../data/data_provider.dart';
+import '../data/config_provider.dart';
 import '../data/data_manager.dart' as dataManager;
 
 class CategoryItem extends StatefulWidget {
@@ -81,7 +81,7 @@ class _CategoryItemState extends State<CategoryItem> {
                   icon: Icon(Icons.check),
                   onPressed: () {
                     widget.category.name = _name;
-                    DataProvider.of(context).updateCategory(widget.category);
+                    ConfigProvider.of(context).updateCategory(widget.category);
                   },
                 )
               : Container(),
@@ -117,7 +117,7 @@ class _CategoryItemState extends State<CategoryItem> {
               MaterialButton(
                 child: Text("DELETE"),
                 onPressed: () {
-                  DataProvider.of(context).deleteCategory(widget.category);
+                  ConfigProvider.of(context).deleteCategory(widget.category);
                   Navigator.pop(context);
                 },
               )
@@ -137,7 +137,7 @@ class _CategoryItemState extends State<CategoryItem> {
               setState(() {
                 widget.category.color = color.value.toString();
               });
-              DataProvider.of(context).updateCategory(widget.category);
+              ConfigProvider.of(context).updateCategory(widget.category);
             },
             selectedColor: widget.category.usableColor,
           ),

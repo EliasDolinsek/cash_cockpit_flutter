@@ -1,3 +1,4 @@
+import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -7,19 +8,18 @@ import '../core/bill.dart';
 import 'statistics_card.dart';
 
 class CategoriesStatisticsCard extends StatefulWidget {
-  final List<Category> categories;
-  final List<Bill> bills;
 
-  const CategoriesStatisticsCard(
-      {Key key, @required this.categories, @required this.bills})
-      : super(key: key);
+  final DataProvider dataProvider;
+
+  const CategoriesStatisticsCard({Key key, this.dataProvider}) : super(key: key);
+
 
   List<Category> get usableCategories =>
-      categories.where((c) => c.billIDs.length != 0).toList();
+      dataProvider.categories.where((c) => c.billIDs.where((billID) => Bill.findBill(billID, dataProvider.bills) != null).toList().length != 0).toList();
 
   List<Category> get usableAmountBasedCategories => usableCategories
       .where((c) =>
-          Bill.getBillsTotalAmount(Category.getBillsOfCategory(c, bills)) != 0)
+          Bill.getBillsTotalAmount(Category.getBillsOfCategory(c, dataProvider.bills)) != 0)
       .toList();
 
   @override
@@ -98,7 +98,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
   }
 
   bool _canBuildStatistics() =>
-      widget.categories != null && widget.usableCategories != null && widget.bills != null &&
+      widget.dataProvider.categories != null && widget.usableCategories != null && widget.dataProvider.bills != null &&
       ((_selectedStatisticOption == DefaultStatisticsOptions.amountBased &&
               _canBuildAmountBasedStatistics()) ||
           (_selectedStatisticOption == DefaultStatisticsOptions.usageBased &&
@@ -143,7 +143,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
         .map((category) => CategoryUsage(
             category,
             Bill.getBillsTotalAmount(
-                    Category.getBillsOfCategory(category, widget.bills))
+                    Category.getBillsOfCategory(category, widget.dataProvider.bills))
                 .toInt()))
         .toList();
   }

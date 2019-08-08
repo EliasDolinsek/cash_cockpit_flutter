@@ -1,3 +1,4 @@
+import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +6,11 @@ import 'currency_setup_pages.dart';
 import 'main_page.dart';
 
 class WelcomePage extends StatelessWidget {
+
+  final DataProvider dataProvider;
+
+  const WelcomePage({Key key, this.dataProvider}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     createDefaultCategoriesIfNoExist(context);
@@ -67,9 +73,8 @@ class WelcomePage extends StatelessWidget {
   }
 
   void createDefaultCategoriesIfNoExist(BuildContext context) async {
-    final dataProvider = DataProvider.of(context);
-    if ((await dataProvider.monthDataProvider.bills.first).length == 0) {
-      dataProvider.createDefaultCategories();
+    if (dataProvider.bills.length == 0) {
+      ConfigProvider.of(context).createDefaultCategories();
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:cash_cockpit_app/core/bill.dart';
 import 'package:cash_cockpit_app/core/settings.dart';
-import 'package:cash_cockpit_app/data/data_provider.dart';
+import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'statistics_card.dart';
@@ -76,7 +76,7 @@ class MoneyStatisticsCard extends StatelessWidget {
   }
 
   Widget _buildBalanceNotice(BuildContext context) {
-    final dataProvider = DataProvider.of(context);
+    final dataProvider = ConfigProvider.of(context);
     final balance = dataProvider.settings.currencyFormatter
         .formatAmount(dataProvider.settings.balance);
     final monthlySaveUps = dataProvider.settings.currencyFormatter
