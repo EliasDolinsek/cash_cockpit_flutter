@@ -25,8 +25,6 @@ class _MainPageState extends State<MainPage> {
 
   int _selectedIndex = 0;
 
-  DataProvider month;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,23 +37,32 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Colors.white,
         actions: <Widget>[
           Container(
-            child: InkWell(
-              onTap: _showMonthPicker,
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  items: [
-                    DropdownMenuItem(
-                        child: Text("MONTH_AS_STRING")), //TODO Add month as string
-                    DropdownMenuItem(
-                      child: Text("CHANGE"),
-                      value: "change",
-                    )
-                  ],
-                  onChanged: (value) {
-                    if (value == "change") _showMonthPicker();
-                  },
-                ),
-              ),
+            child: BlocBuilder(
+              bloc: BlocProvider.of<DataBloc>(context),
+              builder: (context, state){
+                if(state is DataAvailableState){
+                  return InkWell(
+                    onTap: () => _showMonthPicker(state.month),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        items: [
+                          DropdownMenuItem(
+                              child: Text(state.monthAsString)),
+                          DropdownMenuItem(
+                            child: Text("CHANGE"),
+                            value: "change",
+                          )
+                        ],
+                        onChanged: (value) {
+                          if (value == "change") _showMonthPicker(state.month);
+                        },
+                      ),
+                    ),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              },
             ),
           )
         ],
@@ -86,14 +93,14 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void _showMonthPicker() {
+  void _showMonthPicker(DateTime month) {
     showMonthPicker(
       context: context,
-      initialDate: month.month,
+      initialDate: month,
     ).then((DateTime dateTime) {
       if (dateTime == null) return;
       setState(() {
-        month.month = dateTime;
+        BlocProvider.of<DataBloc>(context).dispatch(SetupDataEvent(dateTime));
       });
     });
   }

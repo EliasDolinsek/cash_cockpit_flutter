@@ -1,20 +1,19 @@
+import 'package:cash_cockpit_app/core/core.dart';
 import 'package:flutter/material.dart';
 
 import '../core/bill.dart';
-
-import '../data/config_provider.dart';
 
 class BillItem extends StatelessWidget {
 
   final Bill bill;
   final Function onPressed;
+  final Settings settings;
 
-  const BillItem(this.bill, {this.onPressed});
+  const BillItem(this.bill, this.settings, {this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormatter =
-        ConfigProvider.of(context).settings.currencyFormatter;
+    final currencyFormatter = settings.currencyFormatter;
     return InkWell(
       onTap: onPressed,
       child: Padding(

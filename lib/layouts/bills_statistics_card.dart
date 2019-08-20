@@ -74,7 +74,7 @@ class _BillsStatisticsCardState extends State<BillsStatisticsCard> {
   }
 
   Widget _buildStatistic(){
-    if(widget.bills == null || widget.bills.length == 0){
+    if(widget.bills == null || widget.bills.length == 0 || Bill.getBillsTotalAmount(widget.bills) == 0){
       return Center(child: Text("No statistic available"));
     } else {
       return charts.PieChart(

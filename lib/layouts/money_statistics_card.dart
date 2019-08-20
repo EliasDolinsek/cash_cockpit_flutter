@@ -1,6 +1,5 @@
 import 'package:cash_cockpit_app/core/bill.dart';
 import 'package:cash_cockpit_app/core/settings.dart';
-import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'statistics_card.dart';
@@ -8,6 +7,7 @@ import '../widgets/amount_text.dart';
 import '../data/data_calculator.dart' as dataCalculator;
 
 class MoneyStatisticsCard extends StatelessWidget {
+
   final List<Bill> bills;
   final Settings settings;
 
@@ -32,6 +32,7 @@ class MoneyStatisticsCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: AmountText(
+              settings,
               amount: dataCalculator.calculateCash(bills, settings),
               lowerText: "CASH",
               redWhenNegative: true,
@@ -76,11 +77,10 @@ class MoneyStatisticsCard extends StatelessWidget {
   }
 
   Widget _buildBalanceNotice(BuildContext context) {
-    final dataProvider = ConfigProvider.of(context);
-    final balance = dataProvider.settings.currencyFormatter
-        .formatAmount(dataProvider.settings.balance);
-    final monthlySaveUps = dataProvider.settings.currencyFormatter
-        .formatAmount(dataProvider.settings.desiredMonthlySaveUps);
+    final balance = settings.currencyFormatter
+        .formatAmount(settings.balance);
+    final monthlySaveUps = settings.currencyFormatter
+        .formatAmount(settings.desiredMonthlySaveUps);
 
     return Column(
       children: <Widget>[

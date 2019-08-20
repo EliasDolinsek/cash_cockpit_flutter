@@ -13,6 +13,7 @@ class DataBloc extends Bloc<DataEvent, DataState> {
   List<Category> _categories = [];
   List<Bill> _bills = [];
   Settings _settings = Settings.defaultSettings();
+  DateTime _month = DateTime.now();
 
   @override
   DataState get initialState => InitialDataState();
@@ -22,6 +23,7 @@ class DataBloc extends Bloc<DataEvent, DataState> {
     DataEvent event,
   ) async* {
     if (event is SetupDataEvent) {
+      _month = event.month;
       repository.userID = (await FirebaseAuth.instance.currentUser()).uid;
       _settings = await Settings.fromFirebase(repository.userID);
 
@@ -36,10 +38,23 @@ class DataBloc extends Bloc<DataEvent, DataState> {
       });
 
     } else if(event is DataUpdatedEvent){
-      yield DataAvailableState(event.bills, event.categories, event.settings);
+      yield DataAvailableState(event.bills, event.categories, event.settings, _month);
+    } else if(event is CreateBill){
+      repository.createBill(event.bill);
+    } else if(event is UpdateBill){
+      repository.updateBill(event.bill);
+    } else if(event is DeleteBill){
+      repository.deleteBill(event.bill);
+    } else if(event is CreateCategory){
+      repository.createCategory(event.category);
+    } else if(event is UpdateCategory){
+      repository.updateCategory(event.category);
+    } else if(event is DeleteCategory){
+      repository.deleteCategory(event.category);
     }
+    //TODO continue
   }
 
-  String monthAsString(DateTime month) =>
+  static String monthAsString(DateTime month) =>
       DateFormat("MMM yyyy").format(month).toUpperCase();
 }

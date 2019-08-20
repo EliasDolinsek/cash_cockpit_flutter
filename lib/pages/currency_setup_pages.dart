@@ -1,5 +1,7 @@
+import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/amount_text.dart';
 import '../widgets/currency_selection.dart';
@@ -90,9 +92,19 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
   }
 
   Widget _buildAmountText() {
-    return AmountText(
-      amount: 1000,
-      lowerText: "EXAMPLE",
+    return BlocBuilder(
+      bloc: BlocProvider.of<DataBloc>(context),
+      builder: (context, state){
+        if(state is DataAvailableState){
+          return AmountText(
+            state.settings,
+            amount: 1000,
+            lowerText: "EXAMPLE",
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 

@@ -1,7 +1,10 @@
 import 'package:cash_cockpit_app/core/category.dart';
+import 'package:cash_cockpit_app/core/core.dart';
+import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/bill.dart';
 
@@ -16,9 +19,10 @@ class BillPage extends StatefulWidget {
 
   final Bill bill;
   final bool editMode;
-  final DataProvider dataProvider;
+  final List<Category> categories;
+  final Settings settings;
 
-  const BillPage(this.bill, this.editMode, this.dataProvider);
+  const BillPage(this.bill, this.editMode, this.categories, this.settings);
 
   @override
   _BillPageState createState() => _BillPageState();
@@ -28,8 +32,8 @@ class _BillPageState extends State<BillPage> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  ConfigProvider _dataProvider;
   TextEditingController _nameController;
+  DataBloc _dataBloc;
 
   int _billType;
   double _amount;
@@ -44,11 +48,8 @@ class _BillPageState extends State<BillPage> {
     _name = widget.bill.name;
     _nameController = TextEditingController(text: _name)
       ..selection = TextSelection.collapsed(offset: _name.length);
-    _category = widget.dataProvider.categories.firstWhere((c) =>c.billIDs.contains(widget.bill.id), orElse: () => null);
-    
-    Future.delayed(Duration.zero, (){
-      _dataProvider = ConfigProvider.of(context);
-    });
+    _category = widget.categories.firstWhere((c) =>c.billIDs.contains(widget.bill.id), orElse: () => null);
+    _dataBloc = BlocProvider.of<DataBloc>(context);
   }
 
   @override
@@ -65,7 +66,7 @@ class _BillPageState extends State<BillPage> {
     if (_category != null) {
       print(_category.billIDs);
       if (!_category.billIDs.contains(billID)) _category.billIDs.add(billID);
-      _dataProvider.updateCategory(_category);
+      _dataBloc.dispatch(UpdateCategory(_category));
     }
   }
 
@@ -88,6 +89,7 @@ class _BillPageState extends State<BillPage> {
             Flexible(
               flex: 3,
               child: AmountText(
+                widget.settings,
                 amount: _amount,
                 lowerText: "Amount",
                 editable: true,
@@ -182,11 +184,9 @@ class _BillPageState extends State<BillPage> {
     widget.bill.amount = _amount;
 
     if (widget.editMode) {
-      _dataProvider.updateBill(widget.bill);
+      _dataBloc.dispatch(UpdateBill(widget.bill));
     } else {
-      _dataProvider
-          .createBill(widget.bill)
-          .then((billID) => updateCategory(billID));
+      _dataBloc.dispatch(CreateBill(widget.bill));
     }
   }
 
@@ -240,7 +240,7 @@ class _BillPageState extends State<BillPage> {
           MaterialButton(
             child: Text("DELETE"),
             onPressed: () {
-              _dataProvider.deleteBill(widget.bill);
+              _dataBloc.dispatch(DeleteBill(widget.bill));
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
           )

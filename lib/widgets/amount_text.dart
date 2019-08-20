@@ -1,14 +1,15 @@
+import 'package:cash_cockpit_app/core/core.dart';
 import 'package:flutter/material.dart';
 
-import '../data/config_provider.dart';
-
 class AmountText extends StatefulWidget {
+
   final double amount;
   final String lowerText;
   final bool editable, redWhenNegative, autoFocus;
   final Function onTextChanged;
+  final Settings settings;
 
-  const AmountText(
+  const AmountText(this.settings,
       {this.amount = 0.0,
       this.lowerText = "",
       this.editable = false,
@@ -57,9 +58,8 @@ class _AmountTextState extends State<AmountText> {
         color: widget.redWhenNegative && widget.amount < 0
             ? Colors.red
             : Colors.black);
-    final dataProvider = ConfigProvider.of(context);
 
-    final currencyController = dataProvider.settings.currencyFormatter
+    final currencyController = widget.settings.currencyFormatter
         .getCurrencyTextController(widget.amount ?? 0.0, (value) {
       widget.onTextChanged(value);
     });
@@ -80,7 +80,7 @@ class _AmountTextState extends State<AmountText> {
         : Padding(
             padding: EdgeInsets.only(bottom: 8.0),
             child: Text(
-              dataProvider.settings.currencyFormatter
+              widget.settings.currencyFormatter
                   .formatAmount(widget.amount ?? 0.0),
               style: style,
             ),
