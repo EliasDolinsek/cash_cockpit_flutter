@@ -9,17 +9,18 @@ import 'statistics_card.dart';
 
 class CategoriesStatisticsCard extends StatefulWidget {
 
-  final DataProvider dataProvider;
+  final List<Bill> bills;
+  final List<Category> categories;
 
-  const CategoriesStatisticsCard({Key key, this.dataProvider}) : super(key: key);
+  const CategoriesStatisticsCard({Key key, this.bills, this.categories}) : super(key: key);
 
 
   List<Category> get usableCategories =>
-      dataProvider.categories.where((c) => c.billIDs.where((billID) => Bill.findBill(billID, dataProvider.bills) != null).toList().length != 0).toList();
+      categories.where((c) => c.billIDs.where((billID) => Bill.findBill(billID, bills) != null).toList().length != 0).toList();
 
   List<Category> get usableAmountBasedCategories => usableCategories
       .where((c) =>
-          Bill.getBillsTotalAmount(Category.getBillsOfCategory(c, dataProvider.bills)) != 0)
+          Bill.getBillsTotalAmount(Category.getBillsOfCategory(c, bills)) != 0)
       .toList();
 
   @override
@@ -98,7 +99,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
   }
 
   bool _canBuildStatistics() =>
-      widget.dataProvider.categories != null && widget.usableCategories != null && widget.dataProvider.bills != null &&
+      widget.categories != null && widget.usableCategories != null && widget.bills != null &&
       ((_selectedStatisticOption == DefaultStatisticsOptions.amountBased &&
               _canBuildAmountBasedStatistics()) ||
           (_selectedStatisticOption == DefaultStatisticsOptions.usageBased &&
@@ -143,7 +144,7 @@ class _CategoriesStatisticsCardState extends State<CategoriesStatisticsCard> {
         .map((category) => CategoryUsage(
             category,
             Bill.getBillsTotalAmount(
-                    Category.getBillsOfCategory(category, widget.dataProvider.bills))
+                    Category.getBillsOfCategory(category, widget.bills))
                 .toInt()))
         .toList();
   }

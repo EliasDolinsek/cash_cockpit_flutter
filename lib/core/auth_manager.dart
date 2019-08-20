@@ -19,3 +19,7 @@ Future<void> signOut(){
   return FirebaseAuth.instance.signOut();
 }
 
+Future<bool> isSignedIn() async {
+  return (await FirebaseAuth.instance.currentUser()) != null;
+}
+

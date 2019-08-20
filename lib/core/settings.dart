@@ -36,17 +36,13 @@ class Settings {
         desiredMonthlySaveUps: map["desiredMonthlySaveUps"] ?? 0.0);
   }
 
-  factory Settings.fromFirebase(FirebaseUser user) {
-    final settings = Settings.defaultSettings();
-    Firestore.instance
+
+  static Future<Settings> fromFirebase(String userID) async {
+    return Settings.fromFirestore(await Firestore.instance
         .collection("users")
-        .document(user.uid)
+        .document(userID)
         .snapshots()
-        .listen((DocumentSnapshot documentSnapshot) {
-      final newSettings = Settings.fromFirestore(documentSnapshot);
-      settings.update(newSettings);
-    });
-    return settings;
+        .first);
   }
 
   void update(Settings settings) {

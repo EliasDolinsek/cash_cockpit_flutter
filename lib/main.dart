@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'data/blocs/auth_bloc/bloc.dart';
+import 'data/blocs/blocs.dart';
 import 'data/config_provider.dart';
 import 'data/data_manager.dart' as dataManager;
 
@@ -14,58 +17,39 @@ import 'pages/welcome_page.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
+  final authBloc = AuthBloc();
+  final dataBloc = DataBloc();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      title: "CashCockpit",
-      home: Scaffold(
-        body: Container(
-          child: StreamBuilder<FirebaseUser>(
-            stream: FirebaseAuth.instance.onAuthStateChanged,
-            builder: (context, snapshot) {
-              print(snapshot.data);
-              if (snapshot.connectionState == ConnectionState.waiting ||
-                  snapshot.hasError) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+    return BlocProvider<AuthBloc>(
+      builder: (context) => authBloc,
+      child: BlocProvider(
+        builder: (context){
+          dataBloc.dispatch(SetupDataEvent(DateTime.now()));
+          return dataBloc;
+        },
+        child: MaterialApp(
+          title: "CashCockpit",
+          theme: ThemeData(primarySwatch: Colors.blue),
+          home: BlocBuilder(
+            bloc: authBloc,
+            builder: (BuildContext context, AuthState state) {
+              if (state is SignedOutAuthState) {
+                return WelcomePage();
+              } else if (state is SignedInAuthState) {
+                return MainPage();
+              } else if(state is SignedOutAuthState){
+                return SignInPage();
               } else {
-                final firebaseUser = snapshot.data;
-                return ConfigProvider(
-                  firebaseUser: firebaseUser,
-                  settings: Settings.fromFirebase(firebaseUser),
-                  child: firebaseUser == null
-                      ? SignInPage()
-                      : _buildPageForFirebaseUser(context),
-                );
+                if(state is InitialAuthState) authBloc.dispatch(SetupEvent());
+                return Scaffold(body: Center(child: CircularProgressIndicator()));
               }
             },
           ),
         ),
       ),
-    );
-  }
-
-  _buildPageForFirebaseUser(context) {
-    final configProvider = ConfigProvider.of(context);
-    return FutureBuilder(
-      future: configProvider.doUserSettingsExist(configProvider.userID),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data) {
-            return MainPage();
-          } else {
-            return WelcomePage();
-          }
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
     );
   }
 }

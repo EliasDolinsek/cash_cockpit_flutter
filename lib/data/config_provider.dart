@@ -19,7 +19,8 @@ class ConfigProvider extends InheritedWidget {
       @required this.firebaseUser,
       @required this.settings})
       : assert(child != null),
-        super(key: key, child: child);
+        super(key: key, child: child){
+  }
 
   static ConfigProvider of(BuildContext context) {
     return context.inheritFromWidgetOfExactType(ConfigProvider) as ConfigProvider;

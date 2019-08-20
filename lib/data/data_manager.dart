@@ -1,14 +1,7 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-
-import '../core/bill.dart';
-import '../core/settings.dart';
-import '../core/category.dart';
-import 'config_provider.dart';
 
 void uploadFile(File file, String fileName, onUploaded(downloadURL)) {
   final StorageReference storageReference = FirebaseStorage.instance

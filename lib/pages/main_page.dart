@@ -1,13 +1,14 @@
+import 'package:cash_cockpit_app/data/blocs/auth_bloc/bloc.dart';
+import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 import '../layouts/home_layout.dart';
 import '../layouts/history_layout.dart';
 import '../layouts/settings_layout.dart';
-
-import '../data/config_provider.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -28,7 +29,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userID = ConfigProvider.of(context).userID;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -45,7 +45,7 @@ class _MainPageState extends State<MainPage> {
                 child: DropdownButton<String>(
                   items: [
                     DropdownMenuItem(
-                        child: Text(month.monthAsString)),
+                        child: Text("MONTH_AS_STRING")), //TODO Add month as string
                     DropdownMenuItem(
                       child: Text("CHANGE"),
                       value: "change",
@@ -60,32 +60,7 @@ class _MainPageState extends State<MainPage> {
           )
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance
-            .collection("categories")
-            .where("userID", isEqualTo: userID)
-            .snapshots(),
-        builder: (context, categories){
-          return StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection("bills")
-                .where("userID", isEqualTo: userID)
-                .where("month", isEqualTo: month.monthAsString)
-                .snapshots(),
-            builder: (context, bills){
-              if(categories.connectionState == ConnectionState.waiting && bills.connectionState == ConnectionState.waiting){
-                return Center(child: CircularProgressIndicator());
-              } else {
-                if(categories.hasData && bills.hasData){
-                  return _bodies.elementAt(_selectedIndex);
-                } else {
-                  return Center(child: Text("No data"));
-                }
-              }
-            },
-          );
-        },
-      ),
+      body: _bodies.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
