@@ -1,5 +1,4 @@
 import 'package:cash_cockpit_app/data/blocs/blocs.dart';
-import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

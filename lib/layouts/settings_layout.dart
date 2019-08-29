@@ -1,4 +1,6 @@
+import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../pages/currency_setup_pages.dart';
 import '../pages/categories_editor_page.dart';
@@ -87,7 +89,7 @@ class _SettingsLayoutState extends State<SettingsLayout> {
         MaterialButton(
           child: Text("SIGN OUT"),
           onPressed: () {
-            authManager.signOut();
+            BlocProvider.of<AuthBloc>(context).dispatch(SignOutEvent());
             Navigator.pop(context);
           },
         )

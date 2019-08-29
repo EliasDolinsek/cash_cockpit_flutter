@@ -1,8 +1,6 @@
 import 'package:cash_cockpit_app/core/category.dart';
 import 'package:cash_cockpit_app/core/core.dart';
 import 'package:cash_cockpit_app/data/blocs/blocs.dart';
-import 'package:cash_cockpit_app/data/config_provider.dart';
-import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,10 +11,7 @@ import '../layouts/images_list.dart';
 
 import 'select_category_page.dart';
 
-import '../data/config_provider.dart';
-
 class BillPage extends StatefulWidget {
-
   final Bill bill;
   final bool editMode;
   final List<Category> categories;
@@ -29,7 +24,6 @@ class BillPage extends StatefulWidget {
 }
 
 class _BillPageState extends State<BillPage> {
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController _nameController;
@@ -48,7 +42,9 @@ class _BillPageState extends State<BillPage> {
     _name = widget.bill.name;
     _nameController = TextEditingController(text: _name)
       ..selection = TextSelection.collapsed(offset: _name.length);
-    _category = widget.categories.firstWhere((c) =>c.billIDs.contains(widget.bill.id), orElse: () => null);
+    _category = widget.categories.firstWhere(
+        (c) => c.billIDs.contains(widget.bill.id),
+        orElse: () => null);
     _dataBloc = BlocProvider.of<DataBloc>(context);
   }
 
@@ -86,6 +82,7 @@ class _BillPageState extends State<BillPage> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
+            _buildDifferentMonthNotification(),
             Flexible(
               flex: 3,
               child: AmountText(
@@ -206,8 +203,9 @@ class _BillPageState extends State<BillPage> {
   Widget _buildCategoryListTitle() {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor:
-            _category == null ? Colors.black : Color(int.parse(_category.color)),
+        backgroundColor: _category == null
+            ? Colors.black
+            : Color(int.parse(_category.color)),
       ),
       title: Text(_category == null ? "No category" : _category.name),
       trailing: MaterialButton(
@@ -247,5 +245,28 @@ class _BillPageState extends State<BillPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildDifferentMonthNotification() {
+    final state = _dataBloc.currentState;
+    if (state is DataAvailableState &&
+        (state.month.year != DateTime.now().year ||
+            state.month.month != DateTime.now().month)) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 16.0),
+        child: ClipRRect(
+          child: Container(
+            color: Colors.redAccent,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Bill will be added for ${state.monthAsString}", style: TextStyle(color: Colors.white),),
+            ),
+          ),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }

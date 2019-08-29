@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'currency.dart';
 
@@ -7,6 +6,7 @@ class Settings {
   //ISO 4217
   String currencyISOCode, centSeparatorSymbol, thousandSeparatorSymbol;
   double balance, desiredMonthlySaveUps;
+  bool _areDefaultSettings = false;
 
   Settings(
       {this.currencyISOCode,
@@ -16,26 +16,43 @@ class Settings {
       this.desiredMonthlySaveUps});
 
   factory Settings.defaultSettings() {
-    return Settings(
+    final settings = Settings(
       currencyISOCode: "EUR",
       centSeparatorSymbol: ",",
       thousandSeparatorSymbol: ".",
       balance: 0,
       desiredMonthlySaveUps: 0,
     );
+
+    settings._areDefaultSettings = true;
+    return settings;
   }
 
   factory Settings.fromFirestore(DocumentSnapshot documentSnapshot) {
     final map = documentSnapshot.data;
     if (map == null) return Settings.defaultSettings();
-    return Settings(
-        currencyISOCode: map["currencyISOCode"] ?? "EUR",
-        centSeparatorSymbol: map["centSeparatorSymbol"] ?? ",",
-        thousandSeparatorSymbol: map["thousandSeparatorSymbol"] ?? ".",
-        balance: map["balance"] ?? 0.0,
-        desiredMonthlySaveUps: map["desiredMonthlySaveUps"] ?? 0.0);
-  }
 
+    final currencyISOCode = map["currencyISOCode"];
+    final centSeparatorSymbol = map["centSeparatorSymbol"];
+    final thousandSeparatorSymbol = map["thousandSeparatorSymbol"];
+    final balance = map["balance"];
+    final desiredMonthlySaveUps = map["desiredMonthlySaveUps"];
+
+    if (currencyISOCode == null &&
+        centSeparatorSymbol == null &&
+        thousandSeparatorSymbol == null &&
+        balance == null &&
+        desiredMonthlySaveUps == null) {
+      return Settings.defaultSettings();
+    }
+
+    return Settings(
+        currencyISOCode: currencyISOCode ?? "EUR",
+        centSeparatorSymbol: centSeparatorSymbol ?? ",",
+        thousandSeparatorSymbol: thousandSeparatorSymbol ?? ".",
+        balance: balance ?? 0.0,
+        desiredMonthlySaveUps: desiredMonthlySaveUps ?? 0.0);
+  }
 
   static Future<Settings> fromFirebase(String userID) async {
     return Settings.fromFirestore(await Firestore.instance
@@ -52,6 +69,8 @@ class Settings {
     balance = settings.balance;
     desiredMonthlySaveUps = settings.desiredMonthlySaveUps;
   }
+
+  bool get areDefaultSettings => _areDefaultSettings;
 
   Currency get currency => Currency.fromISOCode(currencyISOCode);
 

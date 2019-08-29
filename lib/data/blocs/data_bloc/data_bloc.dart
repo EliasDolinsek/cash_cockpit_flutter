@@ -8,12 +8,14 @@ import 'package:intl/intl.dart';
 import './bloc.dart';
 
 class DataBloc extends Bloc<DataEvent, DataState> {
+
   final repository = Repository();
 
   List<Category> _categories = [];
   List<Bill> _bills = [];
   Settings _settings = Settings.defaultSettings();
   DateTime _month = DateTime.now();
+  bool _categoriesListenerSetup = false;
 
   @override
   DataState get initialState => InitialDataState();
@@ -26,33 +28,49 @@ class DataBloc extends Bloc<DataEvent, DataState> {
       _month = event.month;
       repository.userID = (await FirebaseAuth.instance.currentUser()).uid;
       _settings = await Settings.fromFirebase(repository.userID);
+      if(_settings.areDefaultSettings){
+        dispatch(SetupSettingsEvent());
+      } else {
+        repository.billsOfMonth(monthAsString(event.month)).listen((bills) {
+          if(event.month.isAtSameMomentAs(_month)){
+            _bills = bills;
+            dispatch(DataUpdatedEvent(_bills, _categories, _settings));
+          }
+        });
 
-      repository.billsOfMonth(monthAsString(event.month)).listen((bills){
-        _bills = bills;
-        dispatch(DataUpdatedEvent(_bills, _categories, _settings));
-      });
-
-      repository.categories().listen((categories){
-        _categories = categories;
-        dispatch(DataUpdatedEvent(_bills, _categories, _settings));
-      });
-
-    } else if(event is DataUpdatedEvent){
-      yield DataAvailableState(event.bills, event.categories, event.settings, _month);
-    } else if(event is CreateBill){
+        if(!_categoriesListenerSetup){
+          _categoriesListenerSetup = true;
+          repository.categories().listen((categories) {
+            _categories = categories;
+            dispatch(DataUpdatedEvent(_bills, _categories, _settings));
+          });
+        }
+      }
+    } else if (event is DataUpdatedEvent) {
+      yield DataAvailableState(
+          event.bills, event.categories, event.settings, _month);
+    } else if (event is CreateBill) {
       repository.createBill(event.bill);
-    } else if(event is UpdateBill){
+    } else if (event is UpdateBill) {
       repository.updateBill(event.bill);
-    } else if(event is DeleteBill){
+    } else if (event is DeleteBill) {
       repository.deleteBill(event.bill);
-    } else if(event is CreateCategory){
+    } else if (event is CreateCategory) {
       repository.createCategory(event.category);
-    } else if(event is UpdateCategory){
+    } else if (event is CreateDefaultCategories) {
+      repository.createDefaultCategories();
+    } else if (event is UpdateCategory) {
       repository.updateCategory(event.category);
-    } else if(event is DeleteCategory){
+    } else if (event is DeleteCategory) {
       repository.deleteCategory(event.category);
     }
     //TODO continue
+
+    else if(event is SetupSettingsEvent){
+      yield SetupSettingsState(_settings);
+    } else if(event is SetSettingsEvent){
+      repository.setUserSettings(_settings);
+    }
   }
 
   static String monthAsString(DateTime month) =>

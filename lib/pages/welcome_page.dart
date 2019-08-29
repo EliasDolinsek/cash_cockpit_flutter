@@ -1,16 +1,11 @@
-import 'package:cash_cockpit_app/data/config_provider.dart';
-import 'package:cash_cockpit_app/data/data_provider.dart';
+import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'currency_setup_pages.dart';
 import 'main_page.dart';
 
 class WelcomePage extends StatelessWidget {
-
-  final DataProvider dataProvider;
-
-  const WelcomePage({Key key, this.dataProvider}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     createDefaultCategoriesIfNoExist(context);
@@ -51,14 +46,13 @@ class WelcomePage extends StatelessWidget {
                       child: Text("SPECIEFIE CURRENCY SETTINGS"),
                       onPressed: () {
                         Navigator.of(context)
-                            .push(MaterialPageRoute(
+                            .pushReplacement(MaterialPageRoute(
                                 builder: (context) => CurrencySetupPage(
                                       showBackButton: false,
                                     )))
                             .whenComplete(() {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => MainPage()));
+                          BlocProvider.of<DataBloc>(context)
+                              .dispatch(SetupDataEvent(DateTime.now()));
                         });
                       },
                     )
@@ -73,8 +67,11 @@ class WelcomePage extends StatelessWidget {
   }
 
   void createDefaultCategoriesIfNoExist(BuildContext context) async {
-    if (dataProvider.bills.length == 0) {
-      ConfigProvider.of(context).createDefaultCategories();
+    final dataBloc = BlocProvider.of<DataBloc>(context);
+    final state = dataBloc.currentState;
+    if (state is DataAvailableState) {
+      if (state.categories.length == 0)
+        dataBloc.dispatch(CreateDefaultCategories());
     }
   }
 }

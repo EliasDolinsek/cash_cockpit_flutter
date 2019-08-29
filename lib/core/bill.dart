@@ -26,8 +26,8 @@ class Bill {
     final map = documentSnapshot.data;
     return Bill(
         name: map["name"] ?? "",
-        imageURLs: List<String>.from(map["imageURLs"]) ?? [],
-        amount: map["amount"] ?? 0.0,
+        imageURLs: List<String>.from(map["imageURLs"] ?? []),
+        amount: map["amount"].toDouble() ?? 0.0,
         billType: map["billType"] ?? outcome,
         month: map["month"] ?? "",
         id: documentSnapshot.documentID);

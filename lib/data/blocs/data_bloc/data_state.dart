@@ -30,3 +30,12 @@ class DataErrorState extends DataState {
 
   DataErrorState(this.error) : super([error]);
 }
+
+class SetupSettingsState extends DataState {
+
+  final Settings settings;
+
+  SetupSettingsState(this.settings) : super([settings]);
+
+
+}

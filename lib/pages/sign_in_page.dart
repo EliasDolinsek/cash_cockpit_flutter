@@ -1,4 +1,6 @@
+import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../core/auth_manager.dart' as authManager;
 
@@ -9,8 +11,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-
-  bool _showLoadingIndicator = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,15 @@ class _SignInPageState extends State<SignInPage> {
           ),
           Expanded(
             flex: 3,
-            child: Center(
-              child: _showLoadingIndicator ? CircularProgressIndicator() : Container(),
+            child: BlocBuilder(
+              bloc: BlocProvider.of<AuthBloc>(context),
+              builder: (context, state){
+                if(state is SigningInAuthState){
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  return Container();
+                }
+              },
             ),
           ),
           Expanded(
@@ -57,10 +64,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           color: Theme.of(context).primaryColor,
                           onPressed: (){
-                            setState(() => _showLoadingIndicator = true);
-                            authManager.signInWithGoogle().catchError((e){
-                              setState(() => _showLoadingIndicator = false);
-                            });
+                            BlocProvider.of<AuthBloc>(context).dispatch(SignInWithGoogleEvent());
                           },
                         ),
                       ),

@@ -1,7 +1,4 @@
-import 'package:cash_cockpit_app/data/blocs/auth_bloc/bloc.dart';
 import 'package:cash_cockpit_app/data/blocs/blocs.dart';
-import 'package:cash_cockpit_app/data/data_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';

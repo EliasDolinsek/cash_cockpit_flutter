@@ -1,4 +1,3 @@
-import 'package:cash_cockpit_app/data/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 

@@ -1,13 +1,10 @@
 import 'package:cash_cockpit_app/data/blocs/blocs.dart';
-import 'package:cash_cockpit_app/data/config_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/amount_text.dart';
 import '../widgets/currency_selection.dart';
 import '../widgets/currency_separators_selection.dart';
-
-import '../data/data_manager.dart' as dataManager;
 
 class CurrencySetupPage extends StatefulWidget {
   final bool showBackButton, showDoneButton;
@@ -20,6 +17,20 @@ class CurrencySetupPage extends StatefulWidget {
 }
 
 class _CurrencySetupPageState extends State<CurrencySetupPage> {
+
+  DataBloc _dataBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataBloc = BlocProvider.of<DataBloc>(context);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _dataBloc.dispatch(SetSettingsEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +105,8 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
   Widget _buildAmountText() {
     return BlocBuilder(
       bloc: BlocProvider.of<DataBloc>(context),
-      builder: (context, state){
-        if(state is DataAvailableState){
+      builder: (context, state) {
+        if (state is DataAvailableState) {
           return AmountText(
             state.settings,
             amount: 1000,
@@ -110,11 +121,9 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
   Widget _buildCurrencySelection() {
     return CurrencySelection(
-      onCurrencySelected: (currencyISOCode) {
+      onCurrencySelected: (currencyISOCode, settings) {
         setState(() {
-          final configProvider = ConfigProvider.of(context);
-          configProvider.settings.currencyISOCode = currencyISOCode;
-          configProvider.setUserSettings(configProvider.settings, configProvider.firebaseUser.uid);
+          settings.currencyISOCode = currencyISOCode;
         });
       },
     );
@@ -122,13 +131,11 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
   Widget _buildSeparatorsSelection() {
     return CurrencySeparatorsSelection(
-      (centSeparator, thousandSeparator) {
+      (centSeparator, thousandSeparator, settings) {
         setState(
           () {
-            final configProvider = ConfigProvider.of(context);
-            configProvider.settings.centSeparatorSymbol = centSeparator;
-            configProvider.settings.thousandSeparatorSymbol = thousandSeparator;
-            configProvider.setUserSettings(configProvider.settings, configProvider.firebaseUser.uid);
+            settings.centSeparatorSymbol = centSeparator;
+            settings.thousandSeparatorSymbol = thousandSeparator;
           },
         );
       },

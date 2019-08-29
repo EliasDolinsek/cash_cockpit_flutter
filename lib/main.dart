@@ -5,10 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'data/blocs/auth_bloc/bloc.dart';
 import 'data/blocs/blocs.dart';
-import 'data/config_provider.dart';
-import 'data/data_manager.dart' as dataManager;
-
-import 'core/settings.dart';
 
 import 'pages/main_page.dart';
 import 'pages/sign_in_page.dart';
@@ -17,7 +13,6 @@ import 'pages/welcome_page.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-
   final authBloc = AuthBloc();
   final dataBloc = DataBloc();
 
@@ -26,7 +21,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider<AuthBloc>(
       builder: (context) => authBloc,
       child: BlocProvider(
-        builder: (context){
+        builder: (context) {
           dataBloc.dispatch(SetupDataEvent(DateTime.now()));
           return dataBloc;
         },
@@ -37,14 +32,21 @@ class MyApp extends StatelessWidget {
             bloc: authBloc,
             builder: (BuildContext context, AuthState state) {
               if (state is SignedOutAuthState) {
-                return WelcomePage();
-              } else if (state is SignedInAuthState) {
-                return MainPage();
-              } else if(state is SignedOutAuthState){
                 return SignInPage();
+              } else if (state is SignedInAuthState) {
+                return BlocBuilder(
+                    bloc: dataBloc,
+                    builder: (context, state) {
+                      if (state is SetupSettingsState) {
+                        return WelcomePage();
+                      } else {
+                        return MainPage();
+                      }
+                    });
               } else {
-                if(state is InitialAuthState) authBloc.dispatch(SetupEvent());
-                return Scaffold(body: Center(child: CircularProgressIndicator()));
+                if (state is InitialAuthState) authBloc.dispatch(SetupEvent());
+                return Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
               }
             },
           ),

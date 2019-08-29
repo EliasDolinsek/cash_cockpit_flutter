@@ -54,12 +54,4 @@ class Repository {
   Future<void> setUserSettings(Settings settings, ) async {
     return _firebaseProvider.setUserSettings(settings, userID);
   }
-
-  Future<dynamic> createUserSettings(Settings settings, ) {
-    return _firebaseProvider.createUserSettings(settings, userID);
-  }
-
-  Future<void> updateUserSettings(Settings settings, ) {
-    return _firebaseProvider.updateUserSettings(settings, userID);
-  }
 }
