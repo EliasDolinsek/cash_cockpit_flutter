@@ -46,14 +46,13 @@ class WelcomePage extends StatelessWidget {
                       child: Text("SPECIEFIE CURRENCY SETTINGS"),
                       onPressed: () {
                         Navigator.of(context)
-                            .pushReplacement(MaterialPageRoute(
-                                builder: (context) => CurrencySetupPage(
-                                      showBackButton: false,
-                                    )))
-                            .whenComplete(() {
-                          BlocProvider.of<DataBloc>(context)
-                              .dispatch(SetupDataEvent(DateTime.now()));
-                        });
+                            .pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => CurrencySetupPage(
+                              showBackButton: false,
+                            ),
+                          ),
+                        );
                       },
                     )
                   ],

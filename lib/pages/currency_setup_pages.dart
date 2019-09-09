@@ -1,3 +1,4 @@
+import 'package:cash_cockpit_app/core/core.dart';
 import 'package:cash_cockpit_app/data/blocs/blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,17 +20,16 @@ class CurrencySetupPage extends StatefulWidget {
 class _CurrencySetupPageState extends State<CurrencySetupPage> {
 
   DataBloc _dataBloc;
+  Settings _settings = Settings.defaultSettings();
 
   @override
   void initState() {
     super.initState();
     _dataBloc = BlocProvider.of<DataBloc>(context);
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _dataBloc.dispatch(SetSettingsEvent());
+    final state = _dataBloc.currentState;
+    if(state is DataAvailableState) _settings = _settings;
+    if(state is SetupSettingsState) _settings = _settings;
   }
 
   @override
@@ -103,19 +103,15 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
   }
 
   Widget _buildAmountText() {
-    return BlocBuilder(
-      bloc: BlocProvider.of<DataBloc>(context),
-      builder: (context, state) {
-        if (state is DataAvailableState) {
-          return AmountText(
-            state.settings,
-            amount: 1000,
-            lowerText: "EXAMPLE",
-          );
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
+    final state = BlocProvider.of<DataBloc>(context).currentState;
+    var settings = Settings.defaultSettings();
+    if(state is SetupSettingsState) settings = settings;
+    if(state is DataAvailableState) settings = settings;
+
+    return AmountText(
+      settings,
+      amount: 1000,
+      lowerText: "EXAMPLE",
     );
   }
 
@@ -147,7 +143,11 @@ class _CurrencySetupPageState extends State<CurrencySetupPage> {
       return <Widget>[
         IconButton(
           icon: Icon(Icons.check),
-          onPressed: () => Navigator.pop(context),
+          onPressed: (){
+            _dataBloc.dispatch(SetSettingsEvent(_settings));
+            Navigator.pop(context);
+            _dataBloc.dispatch(SetupDataEvent(DateTime.now()));
+          },
         ),
       ];
     } else {

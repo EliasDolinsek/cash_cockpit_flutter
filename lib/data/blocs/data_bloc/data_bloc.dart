@@ -8,12 +8,11 @@ import 'package:intl/intl.dart';
 import './bloc.dart';
 
 class DataBloc extends Bloc<DataEvent, DataState> {
-
   final repository = Repository();
 
   List<Category> _categories = [];
   List<Bill> _bills = [];
-  Settings _settings = Settings.defaultSettings();
+  Settings _settings;
   DateTime _month = DateTime.now();
   bool _categoriesListenerSetup = false;
 
@@ -28,17 +27,18 @@ class DataBloc extends Bloc<DataEvent, DataState> {
       _month = event.month;
       repository.userID = (await FirebaseAuth.instance.currentUser()).uid;
       _settings = await Settings.fromFirebase(repository.userID);
-      if(_settings.areDefaultSettings){
+
+      if (_settings == null) {
         dispatch(SetupSettingsEvent());
       } else {
         repository.billsOfMonth(monthAsString(event.month)).listen((bills) {
-          if(event.month.isAtSameMomentAs(_month)){
+          if (event.month.isAtSameMomentAs(_month)) {
             _bills = bills;
             dispatch(DataUpdatedEvent(_bills, _categories, _settings));
           }
         });
 
-        if(!_categoriesListenerSetup){
+        if (!_categoriesListenerSetup) {
           _categoriesListenerSetup = true;
           repository.categories().listen((categories) {
             _categories = categories;
@@ -66,9 +66,11 @@ class DataBloc extends Bloc<DataEvent, DataState> {
     }
     //TODO continue
 
-    else if(event is SetupSettingsEvent){
+    else if (event is SetupSettingsEvent) {
       yield SetupSettingsState(_settings);
-    } else if(event is SetSettingsEvent){
+    } else if (event is SetSettingsEvent) {
+      _settings = event.settings;
+      _settings.areDefaultSettings = false;
       repository.setUserSettings(_settings);
     }
   }

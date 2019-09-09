@@ -6,7 +6,6 @@ class Settings {
   //ISO 4217
   String currencyISOCode, centSeparatorSymbol, thousandSeparatorSymbol;
   double balance, desiredMonthlySaveUps;
-  bool _areDefaultSettings = false;
 
   Settings(
       {this.currencyISOCode,
@@ -23,14 +22,12 @@ class Settings {
       balance: 0,
       desiredMonthlySaveUps: 0,
     );
-
-    settings._areDefaultSettings = true;
     return settings;
   }
 
   factory Settings.fromFirestore(DocumentSnapshot documentSnapshot) {
     final map = documentSnapshot.data;
-    if (map == null) return Settings.defaultSettings();
+    if (map == null) return null;
 
     final currencyISOCode = map["currencyISOCode"];
     final centSeparatorSymbol = map["centSeparatorSymbol"];
@@ -43,7 +40,7 @@ class Settings {
         thousandSeparatorSymbol == null &&
         balance == null &&
         desiredMonthlySaveUps == null) {
-      return Settings.defaultSettings();
+      return null;
     }
 
     return Settings(
@@ -69,8 +66,6 @@ class Settings {
     balance = settings.balance;
     desiredMonthlySaveUps = settings.desiredMonthlySaveUps;
   }
-
-  bool get areDefaultSettings => _areDefaultSettings;
 
   Currency get currency => Currency.fromISOCode(currencyISOCode);
 

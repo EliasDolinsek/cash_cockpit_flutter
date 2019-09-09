@@ -63,4 +63,8 @@ class DeleteBill extends DataEvent {
 
 class SetupSettingsEvent extends DataEvent {}
 
-class SetSettingsEvent extends DataEvent {}
+class SetSettingsEvent extends DataEvent {
+  final Settings settings;
+
+  SetSettingsEvent(this.settings) : super([settings]);
+}
